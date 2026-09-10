@@ -1,0 +1,296 @@
+/* SceneOps Dockview and spatial-area material overrides. */
+
+/* Dockview: groups are recessed work areas; tabs are small molded controls. */
+.forge-shell .dockview-theme-abyss {
+  --dv-color-abyss-dark: var(--neu-base);
+  --dv-color-abyss: var(--neu-base);
+  --dv-color-abyss-light: var(--neu-base);
+  --dv-color-abyss-lighter: rgb(88 101 122 / 14%);
+  --dv-color-abyss-primary-text: var(--neu-ink);
+  --dv-color-abyss-secondary-text: var(--neu-ink-secondary);
+  --dv-activegroup-visiblepanel-tab-background-color: var(--neu-base);
+  --dv-inactivegroup-visiblepanel-tab-background-color: transparent;
+  --dv-activegroup-visiblepanel-tab-color: var(--neu-accent-ink);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--neu-ink-secondary);
+  --dv-activegroup-hiddenpanel-tab-color: var(--neu-ink-muted);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--neu-ink-muted);
+  --dv-active-sash-color: var(--neu-accent);
+  --dv-paneview-active-outline-color: var(--neu-accent-ink);
+}
+
+.forge-shell .dv-groupview {
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.forge-shell .dv-tabs-and-actions-container {
+  min-height: 38px;
+  padding: 4px 7px;
+  border: 0;
+  background: var(--neu-base);
+  box-shadow:
+    inset 0 2px 3px rgb(184 188 194 / 48%),
+    inset 0 -2px 3px rgb(255 255 255 / 64%);
+}
+
+.forge-shell .dv-tab {
+  min-height: 28px;
+  margin: 1px 3px;
+  padding-inline: 10px 7px;
+  border: 0;
+  border-radius: 10px;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition),
+    background-color var(--neu-transition);
+}
+
+.forge-shell .dv-tab:hover {
+  color: var(--neu-accent-ink);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.forge-shell :is(.dv-active-tab, .dv-tab.dv-active-tab, .dv-tab[aria-selected="true"]) {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.forge-shell .dv-default-tab-action {
+  color: var(--neu-ink-muted);
+  border-radius: 8px;
+}
+
+.forge-shell .dv-default-tab-action:hover {
+  color: var(--neu-accent-ink);
+  background: transparent;
+}
+
+.forge-shell .dv-content-container,
+.forge-shell .dv-view-container {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+}
+
+.forge-shell .dv-sash {
+  background: rgb(88 101 122 / 9%);
+  box-shadow:
+    1px 1px 2px rgb(184 188 194 / 68%),
+    -1px -1px 2px rgb(255 255 255 / 84%);
+}
+
+.forge-shell .dv-sash:hover,
+.forge-shell .dv-sash.dv-active-sash {
+  background: rgb(109 93 252 / 34%);
+}
+
+.forge-shell :is(.dv-drop-target-dropzone, .dv-drag-over-background) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: rgb(109 93 252 / 12%);
+  box-shadow: var(--neu-inset-sm);
+}
+
+.forge-shell :is(.dv-floating-box, .dv-resize-container) {
+  border: 0;
+  border-radius: var(--neu-radius);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-lg);
+  overflow: hidden;
+}
+
+/* Area chrome stays compact; the active area is identified without a glow. */
+.forge-area-header {
+  flex-basis: 40px;
+  height: 40px;
+  gap: 8px;
+  padding: 0 9px;
+  border: 0;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow:
+    inset 0 2px 3px rgb(184 188 194 / 48%),
+    inset 0 -2px 3px rgb(255 255 255 / 62%);
+}
+
+.forge-area-header.is-active {
+  color: var(--neu-ink);
+  box-shadow:
+    inset 0 -2px 0 rgb(109 93 252 / 58%),
+    inset 0 2px 3px rgb(255 255 255 / 68%);
+}
+
+.forge-editor-select {
+  min-height: 30px;
+  padding: 4px 9px;
+  border: 0 !important;
+  border-radius: 10px;
+  color: var(--neu-ink);
+  background: var(--neu-base) !important;
+  box-shadow: var(--neu-raised-xs);
+}
+
+.forge-editor-select:hover {
+  color: var(--neu-accent-ink);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.forge-editor-select:active {
+  box-shadow: var(--neu-pressed);
+}
+
+.forge-editor-select > svg,
+.forge-select-chevron,
+.forge-area-context,
+.forge-area-header .forge-icon-button,
+.forge-area-more > summary {
+  color: var(--neu-ink-muted);
+}
+
+.forge-area-mode {
+  color: var(--warning);
+  font-weight: 650;
+}
+
+.forge-area-header .forge-icon-button,
+.forge-area-more > summary {
+  width: 29px;
+  min-width: 29px;
+  height: 29px;
+  min-height: 29px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition);
+}
+
+.forge-area-header .forge-icon-button:hover,
+.forge-area-more > summary:hover {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.forge-area-more[open] > summary {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.forge-area-menu,
+.forge-window-options {
+  border: 0;
+  border-radius: var(--neu-radius);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-lg);
+}
+
+.forge-area-menu p,
+.forge-window-options > p,
+.forge-window-options legend {
+  color: var(--neu-ink-secondary);
+}
+
+.forge-area-menu button,
+.forge-window-options button {
+  border: 0;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: none;
+}
+
+.forge-area-menu button:hover,
+.forge-window-options button:hover {
+  color: var(--neu-accent-ink);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.forge-window-menu {
+  color: var(--neu-ink-muted);
+}
+
+.forge-window-menu > summary {
+  border: 0;
+  border-radius: 9px;
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.forge-window-menu[open] > summary,
+.forge-window-menu > summary:hover {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  border-color: transparent;
+  box-shadow: var(--neu-pressed);
+}
+
+.forge-restore-notice {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised);
+}
+
+.forge-editor-state {
+  color: var(--neu-ink-secondary);
+}
+
+.forge-editor-state.is-failed {
+  color: var(--critical);
+}
+
+/* Edge affordances keep their layout transforms, but not scale-as-feedback. */
+.forge-edge-handle-label {
+  border: 0;
+  color: var(--neu-ink-muted);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+  scale: 1;
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition),
+    opacity var(--neu-transition);
+}
+
+.forge-edge-handle:hover .forge-edge-handle-label,
+.forge-edge-handle:focus-visible .forge-edge-handle-label,
+.forge-edge-handle[data-judge-visible="true"] .forge-edge-handle-label {
+  color: var(--neu-accent-ink);
+  box-shadow: var(--neu-hover-xs);
+  scale: 1;
+}
+
+.forge-region-pull[data-collapse-ready="true"] .forge-edge-handle-label {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.forge-edge-handle:not([data-judge-visible]) .forge-edge-handle-label {
+  border: 0;
+  background: rgb(81 64 216 / 42%);
+  box-shadow:
+    1px 1px 2px rgb(184 188 194 / 66%),
+    -1px -1px 2px rgb(255 255 255 / 82%);
+}
+
+.forge-edge-handle:hover,
+.forge-edge-handle:focus-visible {
+  border-color: rgb(109 93 252 / 48%);
+}
+
+.forge-edge-preview {
+  background: rgb(109 93 252 / 10%);
+  box-shadow: var(--neu-inset-sm);
+}

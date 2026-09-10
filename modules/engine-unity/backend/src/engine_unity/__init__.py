@@ -1,0 +1,49 @@
+"""Public backend API for the SceneOps Unity engine module."""
+
+from .adapter import UnityAdapter
+from .agent_session import UnityAgentSession, UnityAgentSessionError
+from .prototype_contracts import PrototypeSpec, PrototypeInput, PrototypePlayPayload
+from .image_evidence import inspect_png
+from .contracts import (
+    ApprovalState,
+    ChangeSet,
+    CommandName,
+    CommandRequest,
+    CommandResult,
+    ExecutionContext,
+    ExecutionMode,
+    SourceAssetReference,
+)
+from .identity import IdentityMap, IdentityRegistry
+from .router import create_router
+from .security import expected_change_targets
+from .service import UnityEngineService
+
+__all__ = [
+    "inspect_png",
+    "PrototypeSpec", "PrototypeInput", "PrototypePlayPayload",
+    "UnityAgentSession",
+    "UnityAgentSessionError",
+    "ApprovalState",
+    "ChangeSet",
+    "CommandName",
+    "CommandRequest",
+    "CommandResult",
+    "ExecutionContext",
+    "ExecutionMode",
+    "IdentityMap",
+    "IdentityRegistry",
+    "SourceAssetReference",
+    "UnityAdapter",
+    "UnityEngineService",
+    "create_router",
+    "expected_change_targets",
+]
+
+from .workbench import UnityWorkbenchService, UnityWorkbenchSnapshot, UnityProposalPreview
+
+__all__ += ['UnityWorkbenchService', 'UnityWorkbenchSnapshot', 'UnityProposalPreview']
+from .content_session import content_rejection
+from .content_session import confirm_content_editor_closed
+from .content_session import content_receipt
+from .content_session import content_dispatch_absent

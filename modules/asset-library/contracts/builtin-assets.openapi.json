@@ -1,0 +1,1062 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SceneOps Builtin Assets",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/builtin-assets": {
+      "get": {
+        "tags": [
+          "builtin-assets"
+        ],
+        "summary": "List Assets",
+        "operationId": "listBuiltinAssets",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuiltinCatalog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/builtin-assets/{asset_id}/glb": {
+      "get": {
+        "tags": [
+          "builtin-assets"
+        ],
+        "summary": "Model",
+        "operationId": "readBuiltinAssetGlb",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/builtin-assets/{asset_id}/preview": {
+      "get": {
+        "tags": [
+          "builtin-assets"
+        ],
+        "summary": "Preview",
+        "operationId": "readBuiltinAssetPreview",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/builtin-assets/{asset_id}/sprite": {
+      "get": {
+        "tags": [
+          "builtin-assets"
+        ],
+        "summary": "Sprite",
+        "operationId": "readBuiltinAssetSprite",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/builtin-assets/{asset_id}/blend": {
+      "get": {
+        "tags": [
+          "builtin-assets"
+        ],
+        "summary": "Rig Source",
+        "operationId": "readBuiltinAssetRigSource",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/builtin-assets/{asset_id}/motions": {
+      "get": {
+        "tags": [
+          "builtin-assets"
+        ],
+        "summary": "Shared Motions",
+        "operationId": "readBuiltinSharedMotions",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/builtin-assets/{asset_id}/rig-template": {
+      "get": {
+        "tags": [
+          "builtin-assets"
+        ],
+        "summary": "Shared Rig",
+        "operationId": "readBuiltinSharedRig",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/builtin-assets/{asset_id}/adopt": {
+      "post": {
+        "tags": [
+          "builtin-assets"
+        ],
+        "summary": "Adopt Asset",
+        "operationId": "adoptBuiltinAsset",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdoptBuiltinAsset"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveProjectAssetResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AdoptBuiltinAsset": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Project Id"
+          },
+          "card_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "project_id"
+        ],
+        "title": "AdoptBuiltinAsset"
+      },
+      "BuiltinAsset": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Asset Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "prop",
+              "character",
+              "scene"
+            ],
+            "title": "Kind"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "default": ""
+          },
+          "art_style": {
+            "type": "string",
+            "title": "Art Style",
+            "default": "低多边形"
+          },
+          "game_genres": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Game Genres"
+          },
+          "reusable_asset_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reusable Asset Ids"
+          },
+          "generation_prompt": {
+            "type": "string",
+            "title": "Generation Prompt",
+            "default": ""
+          },
+          "style_prompts": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Style Prompts"
+          },
+          "sprite_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sprite Url"
+          },
+          "sprite_layout": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Sprite Layout"
+          },
+          "rig": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Rig"
+          },
+          "rig_source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rig Source Url"
+          },
+          "shared_motion_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shared Motion Url"
+          },
+          "rig_template_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rig Template Url"
+          },
+          "animations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Animations"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "dimensions_m": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Dimensions M"
+          },
+          "footprint_m": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Footprint M"
+          },
+          "spawn_points": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Spawn Points"
+          },
+          "lighting": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Lighting"
+          },
+          "triangle_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Triangle Count"
+          },
+          "asset_url": {
+            "type": "string",
+            "title": "Asset Url"
+          },
+          "preview_url": {
+            "type": "string",
+            "title": "Preview Url"
+          },
+          "mode": {
+            "type": "string",
+            "const": "cached",
+            "title": "Mode",
+            "default": "cached"
+          }
+        },
+        "type": "object",
+        "required": [
+          "asset_id",
+          "label",
+          "kind",
+          "dimensions_m",
+          "footprint_m",
+          "asset_url",
+          "preview_url"
+        ],
+        "title": "BuiltinAsset"
+      },
+      "BuiltinCatalog": {
+        "properties": {
+          "pack_id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "title": "Pack Id"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Version"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "license": {
+            "type": "string",
+            "title": "License"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/BuiltinAsset"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pack_id",
+          "version",
+          "title",
+          "description",
+          "license",
+          "entries"
+        ],
+        "title": "BuiltinCatalog"
+      },
+      "DoorMaterial": {
+        "properties": {
+          "color_hex": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "title": "Color Hex",
+            "default": "#6B4F3A"
+          },
+          "roughness": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Roughness",
+            "default": 0.75
+          },
+          "metalness": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Metalness",
+            "default": 0.05
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DoorMaterial"
+      },
+      "DoorRecipe": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "const": "door-v1",
+            "title": "Kind",
+            "default": "door-v1"
+          },
+          "seed": {
+            "type": "integer",
+            "const": 0,
+            "title": "Seed",
+            "default": 0
+          },
+          "width_m": {
+            "type": "number",
+            "maximum": 10.0,
+            "minimum": 0.2,
+            "title": "Width M",
+            "default": 1.2
+          },
+          "height_m": {
+            "type": "number",
+            "maximum": 10.0,
+            "minimum": 0.5,
+            "title": "Height M",
+            "default": 2.2
+          },
+          "thickness_m": {
+            "type": "number",
+            "maximum": 2.0,
+            "minimum": 0.02,
+            "title": "Thickness M",
+            "default": 0.15
+          },
+          "material": {
+            "$ref": "#/components/schemas/DoorMaterial"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "DoorRecipe",
+        "description": "Editable source for the first supported procedural asset."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ProjectAssetEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "card_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Id"
+          },
+          "workspace_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Workspace Id"
+          },
+          "source_asset_id": {
+            "type": "string",
+            "title": "Source Asset Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "source_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Title"
+          },
+          "modeling_session_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modeling Session Id"
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "import",
+              "generated"
+            ],
+            "title": "Source Type"
+          },
+          "category": {
+            "type": "string",
+            "const": "model",
+            "title": "Category",
+            "default": "model"
+          },
+          "current_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Current Version"
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/ProjectAssetVersion"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Versions"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "project_id",
+          "source_asset_id",
+          "title",
+          "source_type",
+          "current_version",
+          "versions"
+        ],
+        "title": "ProjectAssetEntry"
+      },
+      "ProjectAssetVersion": {
+        "properties": {
+          "source_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Source Version"
+          },
+          "asset_version_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Version Id"
+          },
+          "source_kind": {
+            "type": "string",
+            "enum": [
+              "file",
+              "procedural",
+              "blender",
+              "glb"
+            ],
+            "title": "Source Kind",
+            "default": "file"
+          },
+          "dimensions_m": {
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Dimensions M"
+          },
+          "vertex_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Vertex Count"
+          },
+          "triangle_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Triangle Count"
+          },
+          "blend_path": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Blend Path"
+          },
+          "preview_path": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Path"
+          },
+          "fbx_path": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fbx Path"
+          },
+          "recipe": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DoorRecipe"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "parent_source_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Source Version"
+          },
+          "node_ids": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Node Ids"
+          },
+          "runtime_artifacts": {
+            "items": {
+              "$ref": "#/components/schemas/RuntimeArtifactReference"
+            },
+            "type": "array",
+            "title": "Runtime Artifacts"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "import",
+              "generate",
+              "normalize",
+              "calibrate",
+              "recipe-create",
+              "recipe-edit",
+              "blender-edit"
+            ],
+            "title": "Operation"
+          },
+          "model_rotation_quaternion_xyzw": {
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Model Rotation Quaternion Xyzw",
+            "default": [
+              0.0,
+              0.0,
+              0.0,
+              1.0
+            ]
+          },
+          "saved_at": {
+            "type": "string",
+            "title": "Saved At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_version",
+          "dimensions_m",
+          "vertex_count",
+          "triangle_count",
+          "operation"
+        ],
+        "title": "ProjectAssetVersion"
+      },
+      "RuntimeArtifactReference": {
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Artifact Id"
+          },
+          "artifact_type": {
+            "type": "string",
+            "enum": [
+              "render",
+              "collision",
+              "module"
+            ],
+            "title": "Artifact Type"
+          },
+          "project_relative_path": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Project Relative Path"
+          },
+          "export_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Export Name"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "artifact_id",
+          "artifact_type",
+          "project_relative_path"
+        ],
+        "title": "RuntimeArtifactReference"
+      },
+      "SaveProjectAssetResult": {
+        "properties": {
+          "entry": {
+            "$ref": "#/components/schemas/ProjectAssetEntry"
+          },
+          "version_created": {
+            "type": "boolean",
+            "title": "Version Created"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "entry",
+          "version_created"
+        ],
+        "title": "SaveProjectAssetResult"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

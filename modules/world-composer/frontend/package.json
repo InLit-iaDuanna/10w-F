@@ -1,0 +1,40 @@
+{
+  "name": "@sceneops/world-composer-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node ../../../scripts/frontend-test.mjs src/tests",
+    "typecheck": "tsc --project tsconfig.json"
+  },
+  "dependencies": {
+    "@sceneops/scene-viewer": "workspace:*",
+    "@sceneops/workbench-ui": "workspace:*",
+    "@sceneops/core-ui": "workspace:*",
+    "@sceneops/api-client": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/three": "0.185.4",
+    "typescript": "5.9.3"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.90.21",
+    "react": "^19.2.8",
+    "three": "0.185.1"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "three": {
+      "optional": true
+    }
+  }
+}

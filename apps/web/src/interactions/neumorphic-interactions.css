@@ -1,0 +1,349 @@
+/*
+ * Dynamic depth layer for the SceneOps neumorphic theme.
+ * No gradients, no neon, and no light-direction changes are used here.
+ */
+
+:root {
+  --neu-motion-fast: 150ms;
+  --neu-motion-control: 230ms;
+  --neu-motion-frame: 480ms;
+  --neu-motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --neu-tilt-x: 0deg;
+  --neu-tilt-y: 0deg;
+}
+
+.neu-interaction-host {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* A press changes depth, not layout position. */
+[data-neu-pressing="true"] {
+  color: var(--neu-accent-ink) !important;
+  background: var(--neu-base) !important;
+  box-shadow: var(--neu-pressed) !important;
+}
+
+.neu-pressure-field,
+.neu-flight-shell,
+.neu-edge-seam {
+  position: fixed;
+  z-index: 2147483000;
+  pointer-events: none;
+  contain: strict;
+}
+
+.neu-pressure-field {
+  border: 0;
+  border-radius: 999px;
+  background: var(--neu-base);
+  opacity: 0;
+}
+
+.neu-flight-shell {
+  overflow: hidden;
+  transform-origin: 0 0;
+  will-change: transform, opacity, border-radius, box-shadow;
+}
+
+.neu-flight-shell__highlight {
+  position: absolute;
+  inset: 9px;
+  border: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 2px 2px 4px rgb(184 188 194 / 44%),
+    inset -2px -2px 4px rgb(255 255 255 / 72%);
+}
+
+.neu-edge-seam {
+  border-radius: 999px;
+  background: var(--neu-seam-accent, var(--neu-accent));
+  box-shadow:
+    2px 2px 4px rgb(184 188 194 / 72%),
+    -2px -2px 4px rgb(255 255 255 / 88%);
+  transform-origin: center;
+  opacity: 0;
+}
+
+[data-neu-revealing="true"] {
+  visibility: hidden !important;
+}
+
+[data-neu-frame-mounted="true"],
+[data-neu-depth-surface="true"] {
+  --neu-tilt-x: 0deg;
+  --neu-tilt-y: 0deg;
+}
+
+/* --------------------------------------------------------------------------
+ * Scheme 1 · Surface extrusion
+ * ----------------------------------------------------------------------- */
+
+html[data-neu-interaction="surface-extrusion"] .forge-edge-handle-label,
+html[data-neu-interaction="surface-extrusion"] [data-neu-edge] {
+  transition:
+    box-shadow var(--neu-motion-control) var(--neu-motion-ease),
+    color var(--neu-motion-control) var(--neu-motion-ease),
+    opacity var(--neu-motion-control) var(--neu-motion-ease);
+}
+
+html[data-neu-interaction="surface-extrusion"] [data-neu-entering="surface-extrusion"] {
+  isolation: isolate;
+}
+
+/* --------------------------------------------------------------------------
+ * Scheme 2 · Edge extrusion
+ * ----------------------------------------------------------------------- */
+
+html[data-neu-interaction="edge-extrusion"] .forge-edge-handle-label,
+html[data-neu-interaction="edge-extrusion"] [data-neu-edge] {
+  color: var(--neu-ink-muted);
+  box-shadow: var(--neu-raised-xs);
+  transition:
+    box-shadow var(--neu-motion-control) var(--neu-motion-ease),
+    color var(--neu-motion-control) var(--neu-motion-ease),
+    opacity var(--neu-motion-control) var(--neu-motion-ease);
+}
+
+html[data-neu-interaction="edge-extrusion"] :is(.forge-edge-handle[data-neu-edge-near="true"] .forge-edge-handle-label, [data-neu-edge-near="true"]) {
+  color: var(--neu-accent-ink);
+  box-shadow:
+    2px 2px 5px rgb(184 188 194 / 78%),
+    -2px -2px 5px rgb(255 255 255 / 90%);
+}
+
+html[data-neu-interaction="edge-extrusion"] [data-neu-entering="edge-extrusion"] {
+  overflow: clip;
+}
+
+/* --------------------------------------------------------------------------
+ * Scheme 3 · Depth stack
+ * ----------------------------------------------------------------------- */
+
+html[data-neu-interaction="depth-stack"] [data-neu-depth-surface="true"] {
+  transform-origin: center;
+  backface-visibility: hidden;
+  transform:
+    perspective(1600px)
+    translateZ(-2px)
+    rotateX(var(--neu-tilt-x))
+    rotateY(var(--neu-tilt-y));
+  transition:
+    transform 360ms var(--neu-motion-ease),
+    box-shadow 360ms var(--neu-motion-ease),
+    opacity 360ms var(--neu-motion-ease),
+    filter 360ms var(--neu-motion-ease);
+  will-change: transform;
+}
+
+html[data-neu-interaction="depth-stack"] [data-neu-depth-surface="true"][data-neu-active-frame="true"] {
+  z-index: 5;
+  opacity: 1;
+  filter: saturate(1);
+  transform:
+    perspective(1600px)
+    translateZ(14px)
+    rotateX(var(--neu-tilt-x))
+    rotateY(var(--neu-tilt-y));
+  box-shadow: var(--neu-raised-lg);
+}
+
+html[data-neu-interaction="depth-stack"] [data-neu-depth-surface="true"][data-neu-active-frame="false"] {
+  z-index: 1;
+  opacity: .94;
+  filter: saturate(.94);
+  transform:
+    perspective(1600px)
+    translateZ(-8px)
+    rotateX(0deg)
+    rotateY(0deg);
+}
+
+html[data-neu-interaction="depth-stack"] .dv-groupview > [data-neu-depth-surface="true"],
+html[data-neu-interaction="depth-stack"] .dv-groupview[data-neu-depth-surface="true"] {
+  border-radius: var(--neu-radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+ * Optional runtime switcher. It is rendered only for ?neuLab=1 or Alt+Shift+I.
+ * ----------------------------------------------------------------------- */
+
+.neu-mode-switcher-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 2147482000;
+  display: grid;
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.neu-mode-switcher-toggle:hover {
+  box-shadow: var(--neu-hover);
+}
+
+.neu-mode-switcher-toggle:active,
+.neu-mode-switcher-toggle[aria-expanded="true"] {
+  box-shadow: var(--neu-pressed);
+}
+
+.neu-mode-switcher {
+  position: fixed;
+  right: 18px;
+  bottom: 72px;
+  z-index: 2147482000;
+  width: min(360px, calc(100vw - 36px));
+  padding: 16px;
+  border: 0;
+  border-radius: var(--neu-radius-lg);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-lg);
+}
+
+.neu-mode-switcher__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.neu-mode-switcher__header div {
+  display: grid;
+  gap: 4px;
+}
+
+.neu-mode-switcher__header strong {
+  color: var(--neu-ink);
+  font-size: 14px;
+}
+
+.neu-mode-switcher__header small {
+  color: var(--neu-ink-secondary);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.neu-mode-switcher__header button {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+}
+
+.neu-mode-switcher__options {
+  display: grid;
+  gap: 10px;
+}
+
+.neu-mode-switcher__option {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 3px 10px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.neu-mode-switcher__option > span:first-child {
+  grid-row: 1 / 3;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--neu-accent-ink);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.neu-mode-switcher__option strong {
+  font-size: 12px;
+}
+
+.neu-mode-switcher__option small {
+  color: var(--neu-ink-secondary);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.neu-mode-switcher__option[aria-pressed="true"] {
+  color: var(--neu-accent-ink);
+  box-shadow: var(--neu-pressed) !important;
+}
+
+.neu-mode-switcher__hint {
+  margin: 12px 2px 0;
+  color: var(--neu-ink-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.neu-mode-switcher__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  .neu-mode-switcher,
+  .neu-mode-switcher-toggle {
+    right: 10px;
+  }
+
+  .neu-mode-switcher-toggle {
+    bottom: 10px;
+  }
+
+  .neu-mode-switcher {
+    bottom: 62px;
+    width: calc(100vw - 20px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-neu-depth-surface="true"],
+  .forge-edge-handle-label,
+  [data-neu-edge],
+  .neu-mode-switcher,
+  .neu-mode-switcher-toggle {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+
+  html[data-neu-interaction="depth-stack"] [data-neu-depth-surface="true"] {
+    transform: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .neu-mode-switcher,
+  .neu-mode-switcher-toggle,
+  .neu-mode-switcher__option {
+    border: 1px solid CanvasText;
+    box-shadow: none !important;
+  }
+}

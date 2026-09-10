@@ -1,0 +1,340 @@
+/* Asset and environment production tools. WebGL content keeps its own scene colors. */
+
+.workbench-root :is(
+    .environment-workflow,
+    .card-asset-workflow,
+    .card-model-scene-workflow
+  ) {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+}
+
+.workbench-root :is(.environment-workflow, .card-asset-workflow, .card-model-scene-workflow) button {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition),
+    background-color var(--neu-transition);
+}
+
+.workbench-root :is(.environment-workflow, .card-asset-workflow, .card-model-scene-workflow) button:hover:not(:disabled) {
+  border-color: transparent;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.workbench-root :is(.environment-workflow, .card-asset-workflow, .card-model-scene-workflow) button:active:not(:disabled),
+.workbench-root :is(.environment-workflow, .card-asset-workflow, .card-model-scene-workflow) button[aria-pressed="true"] {
+  border-color: transparent;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root :is(.environment-workflow, .card-asset-workflow, .card-model-scene-workflow) :is(small, footer),
+.workbench-root :is(.environment-error, .environment-loading),
+.workbench-root .card-asset-empty {
+  color: var(--neu-ink-secondary);
+}
+
+/* Large tool regions are raised once; nested regions use shallow inset depth. */
+.workbench-root :is(
+    .environment-scene-card,
+    .environment-assets-card,
+    .card-model-scene-card,
+    .card-model-camera-card
+  ) {
+  border: 0;
+  border-radius: var(--neu-radius);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root :is(.environment-scene-preview, .card-model-preview, .card-model-scene-empty) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: #cfd6e0;
+  box-shadow: var(--neu-inset-sm);
+}
+
+.workbench-root :is(.environment-scene-preview, .card-model-preview) canvas {
+  border-radius: inherit;
+}
+
+.workbench-root :is(.environment-scene-preview, .card-model-preview) > :is(span, p) {
+  color: var(--neu-ink-secondary);
+  text-shadow: 0 1px 0 rgb(255 255 255 / 60%);
+}
+
+.workbench-root :is(.environment-splitter, .card-model-scene-splitter) span {
+  width: 46px;
+  height: 5px;
+  border-radius: var(--neu-radius-pill);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+  transition:
+    width var(--neu-transition),
+    box-shadow var(--neu-transition);
+}
+
+.workbench-root :is(.environment-splitter, .card-model-scene-splitter):hover span,
+.workbench-root :is(.environment-splitter, .card-model-scene-splitter):focus-visible span {
+  width: 56px;
+  background: var(--neu-base);
+  box-shadow: var(--neu-focus-inset);
+}
+
+.workbench-root :is(.environment-status span, .card-model-scene-title > span) {
+  border: 0;
+  border-radius: var(--neu-radius-pill);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .environment-drop-hint {
+  border: 0;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root .environment-scene-dropzone.is-dragging .environment-scene-preview {
+  border-color: transparent;
+  outline: 2px solid rgb(109 93 252 / 48%);
+  outline-offset: 3px;
+  box-shadow: var(--neu-focus-inset);
+}
+
+.workbench-root .environment-scene-dropzone.is-dragging .environment-drop-hint {
+  border-color: transparent;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root :is(.environment-import-notice, .asset-scale-context, .card-live-state) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .environment-asset-card {
+  border: 0 !important;
+  border-radius: var(--neu-radius-sm) !important;
+  color: var(--neu-ink) !important;
+  background: var(--neu-base) !important;
+  box-shadow: var(--neu-raised-sm) !important;
+  transform: none !important;
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition) !important;
+}
+
+.workbench-root .environment-asset-card:hover {
+  color: var(--neu-accent-ink) !important;
+  box-shadow: var(--neu-hover) !important;
+  transform: none !important;
+}
+
+.workbench-root .environment-asset-card:active,
+.workbench-root .environment-asset-card[aria-pressed="true"] {
+  box-shadow: var(--neu-pressed) !important;
+}
+
+.workbench-root .asset-card-icon {
+  background: var(--neu-base) !important;
+  background-image: none !important;
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .asset-card-icon svg {
+  stroke: var(--neu-accent-ink);
+}
+
+.workbench-root :is(.environment-new-asset, .environment-agent-edit) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root :is(
+    .asset-name-editor input,
+    .asset-name-editor select,
+    .environment-transform-grid input,
+    .environment-agent-edit textarea,
+    .card-model-angle-row select,
+    .card-asset-normalize input
+  ) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-sm);
+}
+
+.workbench-root :is(
+    .environment-new-asset .primary,
+    .asset-editor-actions .primary,
+    .environment-inspector .primary,
+    .card-asset-next-actions .primary
+  ) {
+  border-color: transparent;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root :is(.asset-metrics > div, .card-asset-metrics > div) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .asset-file-links a {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+  transition: box-shadow var(--neu-transition);
+}
+
+.workbench-root .asset-file-links a:hover {
+  border-color: transparent;
+  box-shadow: var(--neu-hover-xs);
+}
+
+.workbench-root .environment-agent-edit {
+  border: 0;
+}
+
+.workbench-root .environment-inspector .scene-back,
+.workbench-root .environment-asset-editor .asset-back {
+  border: 0;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+/* Card-asset workflow */
+.workbench-root .card-model-blocks li {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .card-model-blocks li > span {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root .card-model-blocks li[data-state="current"] {
+  border-color: transparent;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root :is(.card-reference-picker, .card-asset-file) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-sm);
+}
+
+.workbench-root :is(.card-reference-picker, .card-asset-file):hover {
+  color: var(--neu-accent-ink);
+  box-shadow: var(--neu-focus-inset);
+}
+
+.workbench-root .card-asset-notice {
+  border-left: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .card-asset-result-heading > span,
+.workbench-root .card-version-strip button[aria-pressed="true"],
+.workbench-root .asset-version-picker button[aria-pressed="true"] {
+  border: 0;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .card-model-axis-panel,
+.workbench-root :is(.card-asset-details, .card-latest-plan),
+.workbench-root .card-asset-workflow footer {
+  border-color: rgb(88 101 122 / 14%);
+}
+
+.workbench-root .card-version-strip button {
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root :is(.card-asset-result[data-status="failed"] > p, .card-asset-notice[data-kind="error"], .environment-error) {
+  color: var(--critical);
+}
+
+/* Older concept workbench uses broad element selectors; restore it inside the app. */
+.workbench-root :is(.welcome, .columns, .variants, .actions, .notice, .empty) {
+  color: var(--neu-ink);
+}
+
+.workbench-root .columns aside {
+  border-left: 0;
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .variant,
+.workbench-root .empty {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root .key-drawing {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-sm);
+}
+
+.workbench-root blockquote {
+  border-left: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+@media (max-width: 520px) {
+  .workbench-root :is(
+      .environment-scene-card,
+      .environment-assets-card,
+      .card-model-scene-card,
+      .card-model-camera-card
+    ) {
+    border-radius: var(--neu-radius-sm);
+  }
+}

@@ -1,0 +1,186 @@
+/* SceneOps composition chrome and Dockview material overrides. */
+
+.workbench-root {
+  min-width: 0;
+  min-height: 0;
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  isolation: isolate;
+}
+
+.workbench-appbar {
+  position: relative;
+  z-index: 100;
+  height: 54px;
+  min-height: 54px;
+  padding: 0 clamp(14px, 2.4vw, 28px);
+  border: 0;
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-brand {
+  gap: 11px;
+  min-width: 0;
+}
+
+.workbench-brand-mark {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-brand strong {
+  color: var(--neu-ink);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.workbench-appbar-actions {
+  gap: 10px;
+}
+
+.workbench-debug-trigger,
+.workbench-project-trigger {
+  min-height: 32px;
+  padding: 6px 12px;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-project-trigger {
+  color: var(--neu-accent-ink);
+  font-weight: 650;
+}
+
+.workbench-project-trigger svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+}
+
+.workbench-local {
+  min-height: 30px;
+  padding: 4px 10px;
+  border-radius: var(--neu-radius-pill);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-local i {
+  width: 7px;
+  height: 7px;
+  background: var(--success);
+  box-shadow:
+    2px 2px 4px rgb(184 188 194 / 76%),
+    -2px -2px 4px rgb(255 255 255 / 90%);
+}
+
+.workbench-stage,
+.forge-editor-layout,
+.forge-editor-body,
+.forge-shell,
+.forge-dock-canvas {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+}
+
+.workbench-stage {
+  padding: 8px;
+}
+
+.workbench-root.is-chat-only .workbench-stage {
+  padding: 0;
+}
+
+.workbench-error {
+  right: 18px;
+  bottom: 18px;
+  max-width: min(520px, calc(100% - 36px));
+  padding: 11px 14px;
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--critical);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised);
+}
+
+/* Debug surface is an actual raised utility panel, not a dark glass card. */
+.debug-panel {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  border: 0;
+  box-shadow: var(--neu-raised-lg);
+}
+
+.debug-panel__header,
+.debug-panel__runtime,
+.debug-panel__actions,
+.debug-panel__entry {
+  border-color: rgb(88 101 122 / 13%);
+}
+
+.debug-panel__runtime {
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.debug-panel__header small,
+.debug-panel__actions output,
+.debug-panel__entry time,
+.debug-panel__entry span,
+.debug-panel__empty {
+  color: var(--neu-ink-muted);
+}
+
+.debug-panel__entry.is-error {
+  color: var(--critical);
+  background: rgb(200 70 85 / 8%);
+}
+
+.debug-panel__entry.is-error strong,
+.debug-panel__entry.is-error span {
+  color: var(--critical);
+}
+
+@media (max-width: 700px) {
+  .workbench-appbar {
+    height: 50px;
+    min-height: 50px;
+    padding-inline: 10px;
+  }
+
+  .workbench-stage {
+    padding: 4px;
+  }
+
+  .workbench-local {
+    max-width: 112px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .workbench-debug-trigger {
+    display: none;
+  }
+
+  .workbench-project-trigger {
+    padding-inline: 9px;
+  }
+
+  .workbench-brand strong {
+    display: none;
+  }
+}

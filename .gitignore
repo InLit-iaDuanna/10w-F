@@ -1,0 +1,14 @@
+node_modules/
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+modules/*/backend/build/
+integrations/*/build/
+packages/*/build/
+*.tsbuildinfo
+dist/
+.playwright-cli/
+output/
+.local/
+.pnpm-store/

@@ -1,0 +1,440 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import type { DockviewApi } from 'dockview-react';
+import { DockviewPort } from '../DockviewPort.ts';
+
+function instance(instanceId: string, editorId = 'fixture.editor') {
+  return {
+    instanceId,
+    editorId,
+    title: editorId,
+    localState: null,
+    contextBinding: { mode: 'follow-global' as const },
+    dirty: false,
+    locked: false,
+    lifecycle: 'loading' as const,
+    executionMode: 'mock' as const,
+    regions: [],
+  };
+}
+
+type FakeGroup = {
+  id: string;
+  panels: FakePanel[];
+  bounds?: { left: number; top: number; width: number; height: number };
+  size?: { width?: number; height?: number };
+  autoHide: boolean;
+  collapsed: boolean;
+  peeking: boolean;
+  calls: string[];
+  constraints?: { minimumWidth?: number; minimumHeight?: number };
+  api: {
+    id: string;
+    readonly width: number;
+    readonly height: number;
+    readonly boundingBox: { left: number; top: number; width: number; height: number } | undefined;
+    location: { type: 'grid' | 'edge'; position?: string };
+    moveTo: (options: { group?: FakeGroup; position?: string }) => void;
+    setHeaderPosition: () => void;
+    setConstraints: (value: { minimumWidth?: number; minimumHeight?: number }) => void;
+    setSize: (size: { width?: number; height?: number }) => void;
+    setAutoHide: (value: boolean) => void;
+    collapse: () => void;
+    expand: () => void;
+    isCollapsed: () => boolean;
+    isAutoHide: () => boolean;
+    isPeeking: () => boolean;
+  };
+};
+type FakePanel = {
+  id: string;
+  title: string;
+  group: FakeGroup;
+  api: {
+    readonly isActive: boolean;
+    close: () => void;
+    moveTo: (options: { group: FakeGroup }) => void;
+    setTitle: () => void;
+    updateParameters: () => void;
+    maximize: () => void;
+    setActive: () => void;
+  };
+};
+
+function fakeApi() {
+  const closed: string[] = [];
+  const additions: Array<{ id: string; groupId: string; inactive?: boolean }> = [];
+  const peekCalls: Array<{ edge: string; peek: boolean }> = [];
+  const clears: number[] = [];
+  const panels = new Map<string, FakePanel>();
+  const groups: FakeGroup[] = [];
+  const edges = new Map<string, FakeGroup>();
+  function createGroup(id: string, edge?: string): FakeGroup {
+    const group: FakeGroup = {
+      id, panels: [], autoHide: false, collapsed: false, peeking: false, calls: [],
+      api: {
+        get width() { return group.size?.width ?? 300; },
+        get height() { return group.size?.height ?? 240; },
+        get boundingBox() { return group.bounds; },
+        id, location: edge ? { type: 'edge', position: edge } : { type: 'grid' },
+        moveTo: ({ group: destination, position = 'center' }) => {
+          const target = position === 'center' && destination ? destination : createGroup(`grid-${groups.length}`);
+          for (const panel of [...group.panels]) {
+            group.panels.splice(group.panels.indexOf(panel), 1);
+            panel.group = target;
+            target.panels.push(panel);
+          }
+        },
+        setHeaderPosition: () => undefined,
+        setConstraints: (value) => { group.calls.push('constraints'); group.constraints = value; },
+        setSize: (size) => { group.calls.push('size'); group.size = size; },
+        setAutoHide: (value) => { group.calls.push('autohide'); group.autoHide = value; },
+        collapse: () => { group.calls.push('collapse'); group.collapsed = true; },
+        expand: () => { group.calls.push('expand'); group.collapsed = false; },
+        isCollapsed: () => group.collapsed,
+        isAutoHide: () => group.autoHide,
+        isPeeking: () => group.peeking,
+      },
+    };
+    groups.push(group);
+    return group;
+  }
+  const api = {
+    groups,
+    activePanel: undefined as FakePanel | undefined,
+    popoutRestorationPromise: Promise.resolve(),
+    toJSON: () => ({ grid: { root: { type: 'branch' } }, edgeGroups: Object.fromEntries(
+      [...edges].map(([edge, group]) => [edge, { size: group.size?.width ?? group.size?.height }]),
+    ) }),
+    clear: () => { clears.push(1); panels.clear(); groups.length = 0; edges.clear(); api.activePanel = undefined; },
+    fromJSON: () => undefined,
+    getPanel: (id: string) => panels.get(id),
+    getGroup: (id: string): FakeGroup | undefined => groups.find((group) => group.id === id),
+    addGroup: () => createGroup(`grid-${groups.length}`),
+    getEdgeGroup: (edge: string) => edges.get(edge)?.api,
+    removeEdgeGroup: (edge: string) => {
+      const group = edges.get(edge);
+      if (group) groups.splice(groups.indexOf(group), 1);
+      edges.delete(edge);
+    },
+    addEdgeGroup: (edge: string, options: { id: string; autoHide?: boolean; collapsed?: boolean }) => {
+      assert.equal(edges.has(edge), false, 'an edge group is created only once');
+      const group = createGroup(options.id, edge);
+      group.autoHide = options.autoHide ?? false;
+      group.collapsed = options.collapsed ?? false;
+      edges.set(edge, group);
+      return group.api;
+    },
+    addPanel: (options: { id: string; title: string; inactive?: boolean; position?: { referenceGroup?: string; referencePanel?: string; direction?: string } }): FakePanel => {
+      const position = options.position;
+      const group = position?.referenceGroup
+        ? api.getGroup(position.referenceGroup)!
+        : position?.referencePanel
+          ? panels.get(position.referencePanel)!.group
+          : position?.direction ? createGroup('grid') : api.activePanel?.group ?? createGroup('grid');
+      const created: FakePanel = {
+        id: options.id, title: options.title, group,
+        api: {
+          get isActive() { return api.activePanel === created; },
+          close: () => {
+            closed.push(created.id);
+            created.group.panels.splice(created.group.panels.indexOf(created), 1);
+            panels.delete(created.id);
+          },
+          moveTo: ({ group: destination }) => {
+            created.group.panels.splice(created.group.panels.indexOf(created), 1);
+            created.group = destination;
+            destination.panels.push(created);
+          },
+          setTitle: () => undefined,
+          updateParameters: () => undefined,
+          maximize: () => undefined,
+          setActive: () => { created.group.calls.push('active'); api.activePanel = created; },
+        },
+      };
+      group.panels.push(created);
+      additions.push({ id: created.id, groupId: group.id, ...(options.inactive === undefined ? {} : { inactive: options.inactive }) });
+      panels.set(options.id, created);
+      api.activePanel = created;
+      return created;
+    },
+    addPopoutGroup: async (_panel?: unknown, _options?: unknown) => true,
+    addFloatingGroup: () => undefined,
+    peekEdgeGroup: (edge: string, peek: boolean) => {
+      peekCalls.push({ edge, peek });
+      edges.get(edge)!.peeking = peek;
+    },
+    exitMaximizedGroup: () => undefined,
+  };
+  api.addPanel({ id: 'original', title: 'original' });
+  return { api, panels, closed, additions, edges, peekCalls, clears };
+}
+
+test('production auto-open asks Dockview for an inactive result panel without replacing content', async () => {
+  const { api, additions, closed } = fakeApi();
+  const port = new DockviewPort(api as unknown as DockviewApi);
+  await port.open(instance('production-result'), { mode: 'split', direction: 'right', relativeToInstanceId: 'original' }, { preserveFocus: true });
+  assert.equal(additions.at(-1)?.inactive, true);
+  assert.deepEqual(closed, []);
+});
+
+test('split placement applies its initial size on the split axis', async () => {
+  const { api, panels } = fakeApi();
+  const port = new DockviewPort(api as unknown as DockviewApi);
+  await port.open(instance('right-sidebar'), {
+    mode: 'split', direction: 'right', relativeToInstanceId: 'original', initialSize: 440,
+  });
+  assert.deepEqual(panels.get('right-sidebar')?.group.size, { width: 440 });
+});
+
+test('restore removes legacy edge limits without changing persisted user sizes or tabs', () => {
+  const { api } = fakeApi();
+  let restored: unknown;
+  const port = new DockviewPort({ ...api, fromJSON: (layout: unknown) => { restored = layout; } } as unknown as DockviewApi);
+  const layout = {
+    edgeGroups: Object.fromEntries(['left', 'right', 'top', 'bottom'].map(edge => [
+      edge, { minimumSize: 180, maximumSize: 640, size: 1200, collapsed: false, panels: ['draft'] },
+    ])),
+  };
+  port.restore(layout);
+  for (const edge of ['left', 'right', 'top', 'bottom']) {
+    const group = (restored as typeof layout).edgeGroups[edge]!;
+    assert.equal(group.minimumSize, 12);
+    assert.equal(group.maximumSize, undefined);
+    assert.equal(group.size, 1200);
+    assert.deepEqual(group.panels, ['draft']);
+    assert.equal(layout.edgeGroups[edge]!.maximumSize, 640, 'input snapshot is not mutated');
+  }
+});
+
+test('home opens in the grid after the last edge tab closes', async () => {
+  const { api, panels } = fakeApi();
+  const port = new DockviewPort(api as never);
+  await port.open(instance('tool'), { mode: 'drawer', edge: 'bottom' });
+  port.close('original');
+  port.close('tool');
+  await port.open(instance('home'), { mode: 'tab' });
+  assert.equal(panels.get('home')?.group.api.location.type, 'grid');
+});
+
+test('replace without explicit relative panel closes the pre-add active panel', async () => {
+  const { api, closed } = fakeApi();
+  const port = new DockviewPort(api as never);
+  assert.equal(await port.open(instance('replacement'), { mode: 'replace' }), true);
+  assert.deepEqual(closed, ['original']);
+});
+
+test('blocked popout closes the newly created panel and returns false', async () => {
+  const { api, closed } = fakeApi();
+  api.addPopoutGroup = async () => false;
+  const port = new DockviewPort(api as never);
+  assert.equal(await port.open(instance('popout'), { mode: 'popout' }), false);
+  assert.deepEqual(closed, ['popout']);
+});
+
+test('drawer placement creates the panel directly in each native edge group', async () => {
+  const { api, panels, closed, additions, edges } = fakeApi();
+  const port = new DockviewPort(api as never);
+  for (const edge of ['left', 'right', 'top', 'bottom'] as const) {
+    assert.equal(await port.open(instance(edge), { mode: 'drawer', edge }), true);
+    assert.equal(panels.get(edge)?.group, edges.get(edge));
+    assert.deepEqual(additions.at(-1), { id: edge, groupId: edges.get(edge)!.id });
+    assert.deepEqual(edges.get(edge)?.panels.map((panel) => panel.id), [edge]);
+  }
+  assert.deepEqual(panels.get('original')?.group.panels.map((panel) => panel.id), ['original']);
+  assert.deepEqual(closed, []);
+});
+
+test('region splits migrate native edge tabs into grid groups without creating or closing panels', async () => {
+  const { api, panels, closed, additions, edges } = fakeApi();
+  const port = new DockviewPort(api as never);
+  await port.open(instance('top-tool'), { mode: 'drawer', edge: 'top' });
+  await port.open(instance('bottom-tool'), { mode: 'drawer', edge: 'bottom' });
+  edges.get('top')!.size = { height: 180 };
+  edges.get('bottom')!.size = { height: 260 };
+  for (const edge of ['top', 'bottom'] as const) {
+    const group = edges.get(edge)!;
+    Object.defineProperty(group.api, 'height', {
+      get() {
+        if (group.panels.length === 0) throw new Error('released edge size');
+        return group.size?.height ?? 240;
+      },
+    });
+  }
+
+  port.enableRegionSplits();
+
+  assert.equal(edges.size, 0);
+  assert.equal(panels.get('top-tool')?.group.api.location.type, 'grid');
+  assert.equal(panels.get('bottom-tool')?.group.api.location.type, 'grid');
+  assert.deepEqual(panels.get('top-tool')?.group.size, { height: 180 });
+  assert.deepEqual(panels.get('bottom-tool')?.group.size, { height: 260 });
+  assert.deepEqual(closed, []);
+  assert.deepEqual(additions.map(({ id }) => id), ['original', 'top-tool', 'bottom-tool']);
+  assert.ok(api.groups.filter(group => group.api.location.type === 'grid')
+    .every(group => group.constraints?.minimumWidth === 12 && group.constraints.minimumHeight === 12));
+});
+
+test('region splits use an empty native root anchor when the restored layout has no grid', async () => {
+  const { api, panels, edges, additions } = fakeApi();
+  const port = new DockviewPort(api as never);
+  await port.open(instance('hidden-edge-tool'), { mode: 'drawer', edge: 'left' });
+  const originalGrid = panels.get('original')!.group;
+  api.groups.splice(api.groups.indexOf(originalGrid), 1);
+
+  port.enableRegionSplits();
+
+  assert.equal(edges.size, 0);
+  assert.equal(panels.get('hidden-edge-tool')?.group.api.location.type, 'grid');
+  assert.deepEqual(additions.map(({ id }) => id), ['original', 'hidden-edge-tool']);
+});
+
+test('region resize uses native constraints and collapsed detection returns every grid tab', async () => {
+  const { api, panels } = fakeApi();
+  const port = new DockviewPort(api as never);
+  await port.open(instance('tab'), { mode: 'tab', relativeToInstanceId: 'original' });
+
+  port.resizeRegion('original', 'bottom', 4);
+  const group = panels.get('original')!.group;
+  assert.deepEqual(group.constraints, { minimumWidth: 12, minimumHeight: 12 });
+  assert.deepEqual(group.size, { height: 12 });
+  assert.deepEqual(port.collapsedRegionIds().sort(), ['original', 'tab']);
+  group.size = { width: 320, height: 120 };
+  assert.deepEqual(port.collapsedRegionIds(), []);
+});
+
+test('reverse region pulls resolve the adjacent grid group at the pointer position', async () => {
+  const { api, panels } = fakeApi();
+  const port = new DockviewPort(api as never);
+  await port.open(instance('left-tool'), { mode: 'drawer', edge: 'left' });
+  port.enableRegionSplits();
+  const current = panels.get('original')!.group;
+  const adjacent = panels.get('left-tool')!.group;
+  current.bounds = { left: 220, top: 0, width: 680, height: 740 };
+  adjacent.bounds = { left: 0, top: 0, width: 220, height: 740 };
+
+  assert.deepEqual(port.adjacentRegionIds('original', 'left', 0.5), ['left-tool']);
+  assert.deepEqual(port.adjacentRegionIds('original', 'right', 0.5), []);
+});
+
+test('failed native edge creation does not leave the requested tool in the conversation group', async () => {
+  const { api, panels, additions } = fakeApi();
+  api.addEdgeGroup = () => { throw new Error('edge group unavailable'); };
+  const port = new DockviewPort(api as never);
+  await assert.rejects(port.open(instance('drawer'), { mode: 'drawer', edge: 'left' }), /edge group unavailable/);
+  assert.equal(panels.has('drawer'), false);
+  assert.deepEqual(additions, [{ id: 'original', groupId: 'grid' }]);
+});
+
+test('popout bounds use Dockview v8 position options', async () => {
+  const { api } = fakeApi();
+  let options: unknown;
+  api.addPopoutGroup = async (_panel?: unknown, value?: unknown) => {
+    options = value;
+    return true;
+  };
+  const port = new DockviewPort(api as never);
+  const bounds = { left: 10, top: 20, width: 800, height: 500 };
+  assert.equal(await port.open(instance('popout-bounds'), { mode: 'popout', bounds }), true);
+  assert.deepEqual(options, { popoutUrl: '/popout.html', position: bounds });
+});
+
+test('Peek mode invokes Dockview explicit edge-group peek API', async () => {
+  const { api, peekCalls, edges } = fakeApi();
+  const port = new DockviewPort(api as never);
+  await port.open(instance('drawer-panel'), { mode: 'drawer', edge: 'left' });
+  port.syncDrawer({
+    edge: 'left', mode: 'peek', size: 280, lastOpenSize: 280,
+    tabs: ['drawer-panel'], activeInstanceId: 'drawer-panel',
+  });
+  assert.deepEqual(peekCalls, [{ edge: 'left', peek: true }]);
+  assert.equal(edges.get('left')?.collapsed, true);
+  assert.equal(edges.get('left')?.autoHide, true);
+  assert.deepEqual(edges.get('left')?.size, { width: 280 });
+});
+
+for (const edge of ['left', 'right', 'top', 'bottom'] as const) {
+  test(`${edge} drawer transitions are idempotent and preserve the requested size`, async () => {
+    const { api, edges, peekCalls } = fakeApi();
+    const port = new DockviewPort(api as never);
+    await port.open(instance('tool'), { mode: 'drawer', edge });
+    const group = edges.get(edge)!;
+    const drawer = { edge, mode: 'peek' as const, size: 320, lastOpenSize: 320, tabs: ['tool'], activeInstanceId: 'tool' };
+    for (const mode of ['peek', 'pinned', 'hidden', 'peek'] as const) {
+      port.syncDrawer({ ...drawer, mode });
+      const calls = [...group.calls];
+      const peeks = [...peekCalls];
+      port.syncDrawer({ ...drawer, mode });
+      assert.deepEqual(group.calls, calls);
+      assert.deepEqual(peekCalls, peeks);
+      assert.equal(group.collapsed, mode !== 'pinned');
+      assert.equal(group.peeking, mode === 'peek');
+      assert.deepEqual(group.size, edge === 'left' || edge === 'right' ? { width: 320 } : { height: 320 });
+    }
+    port.syncDrawer({ ...drawer, size: 400 });
+    assert.deepEqual(peekCalls.slice(-2), [{ edge, peek: false }, { edge, peek: true }]);
+  });
+}
+
+test('drawer replacement and moves preserve its native group, size and pin state', async () => {
+  const { api, panels, edges, closed } = fakeApi();
+  const port = new DockviewPort(api as never);
+  await port.open(instance('library'), { mode: 'drawer', edge: 'left' });
+  port.syncDrawer({
+    edge: 'left', mode: 'pinned', size: 360, lastOpenSize: 360,
+    tabs: ['library'], activeInstanceId: 'library',
+  });
+  const group = edges.get('left')!;
+  api.activePanel = panels.get('original');
+  await port.open(instance('tool'), { mode: 'replace', relativeToInstanceId: 'library' });
+  assert.deepEqual(closed, ['library']);
+  assert.equal(panels.get('tool')?.group, group);
+  await port.move(instance('original'), { mode: 'drawer', edge: 'left' });
+  await port.move(instance('original'), { mode: 'drawer', edge: 'left' });
+  assert.equal(panels.get('original')?.group, group);
+  assert.deepEqual(group.panels.map((panel) => panel.id), ['tool', 'original']);
+  assert.equal(group.autoHide, false);
+  assert.equal(group.collapsed, false);
+  assert.deepEqual(group.size, { width: 360 });
+});
+
+test('moving an existing tool replaces only the referenced edge tab', async () => {
+  const { api, panels, edges, closed } = fakeApi();
+  const port = new DockviewPort(api as never);
+  await port.open(instance('library'), { mode: 'drawer', edge: 'right' });
+  await port.move(instance('original'), { mode: 'replace', relativeToInstanceId: 'library' });
+  assert.deepEqual(closed, ['library']);
+  assert.equal(panels.get('original')?.group, edges.get('right'));
+  assert.deepEqual(edges.get('right')?.panels.map((panel) => panel.id), ['original']);
+});
+
+test('invalid Dockview JSON is rebuilt from validated workspace metadata', async () => {
+  const { api, panels, clears } = fakeApi();
+  api.fromJSON = () => { throw new Error('invalid Dockview snapshot'); };
+  const port = new DockviewPort(api as never);
+  const assistant = instance('assistant', 'assistant.conversation');
+  const status = await port.restoreWorkspace({
+    schemaVersion: 3,
+    workspaceId: 'home',
+    title: 'Home',
+    customized: false,
+    instances: { assistant },
+    areas: [{
+      areaId: 'home-area', tabs: ['assistant'], activeInstanceId: 'assistant', headerPosition: 'top',
+    }],
+    drawers: {
+      left: { edge: 'left', mode: 'hidden', size: 280, lastOpenSize: 280, tabs: [], activeInstanceId: null },
+      right: { edge: 'right', mode: 'hidden', size: 280, lastOpenSize: 280, tabs: [], activeInstanceId: null },
+      top: { edge: 'top', mode: 'hidden', size: 220, lastOpenSize: 220, tabs: [], activeInstanceId: null },
+      bottom: { edge: 'bottom', mode: 'hidden', size: 220, lastOpenSize: 220, tabs: [], activeInstanceId: null },
+    },
+    floatingGroups: [],
+    popoutGroups: [],
+    activeAreaId: 'home-area',
+    maximizedAreaId: null,
+    dockviewLayout: { malformed: true },
+  });
+  assert.equal(status, 'recovered');
+  assert.ok(clears.length > 0);
+  assert.ok(panels.has('assistant'));
+});

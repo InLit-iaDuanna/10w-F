@@ -1,0 +1,25 @@
+{
+  "name": "@sceneops/render-ops",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@tanstack/react-query": "5.90.21",
+    "openapi-fetch": "0.17.0",
+    "@sceneops/workbench-ui": "workspace:*",
+    "@sceneops/core-ui": "workspace:*",
+    "@sceneops/api-client": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.18",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "test": "node ../../../scripts/frontend-test.mjs src/tests",
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

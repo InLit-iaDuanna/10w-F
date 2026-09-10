@@ -1,0 +1,1885 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SceneOps Planning Journey",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/design/journeys/{project_id}": {
+      "get": {
+        "tags": [
+          "planning-journey"
+        ],
+        "summary": "Get",
+        "operationId": "get_api_design_journeys__project_id__get",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanningJourney"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/design/journeys/{project_id}/command/stream": {
+      "post": {
+        "tags": [
+          "planning-journey"
+        ],
+        "summary": "Stream",
+        "operationId": "stream_api_design_journeys__project_id__command_stream_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JourneyCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JourneyStreamEvent"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/design/journeys/{project_id}/command": {
+      "post": {
+        "tags": [
+          "planning-journey"
+        ],
+        "summary": "Command",
+        "operationId": "command_api_design_journeys__project_id__command_post",
+        "parameters": [
+          {
+            "name": "project_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Project Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/JourneyCommand"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanningJourney"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArchitectureRecommendation": {
+        "properties": {
+          "code_architecture": {
+            "type": "string",
+            "enum": [
+              "object-component",
+              "ecs"
+            ],
+            "title": "Code Architecture"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Rationale"
+          },
+          "tradeoffs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Tradeoffs"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code_architecture",
+          "rationale",
+          "tradeoffs"
+        ],
+        "title": "ArchitectureRecommendation"
+      },
+      "CardBranch": {
+        "properties": {
+          "card_id": {
+            "type": "string",
+            "title": "Card Id"
+          },
+          "branch": {
+            "type": "string",
+            "title": "Branch"
+          },
+          "worktree_path": {
+            "type": "string",
+            "title": "Worktree Path"
+          },
+          "base_commit": {
+            "type": "string",
+            "title": "Base Commit"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "card_id",
+          "branch",
+          "worktree_path",
+          "base_commit"
+        ],
+        "title": "CardBranch"
+      },
+      "CardConversation": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/JourneyMessage"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "summary_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary Id"
+          },
+          "start_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Id"
+          },
+          "draft": {
+            "type": "string",
+            "title": "Draft",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "CardConversation"
+      },
+      "CardModelingSession": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "card_id": {
+            "type": "string",
+            "title": "Card Id"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "import",
+              "create"
+            ],
+            "title": "Source"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/JourneyMessage"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "composer_draft": {
+            "type": "string",
+            "title": "Composer Draft",
+            "default": ""
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "brief",
+              "awaiting_import"
+            ],
+            "title": "Stage"
+          },
+          "mode": {
+            "type": "string",
+            "const": "planned",
+            "title": "Mode",
+            "default": "planned"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "card_id",
+          "source",
+          "stage"
+        ],
+        "title": "CardModelingSession",
+        "description": "A card-owned design conversation, never evidence of a produced model."
+      },
+      "DemoDirectionDraft": {
+        "properties": {
+          "core_experience": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Core Experience"
+          },
+          "perspective_style": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Perspective Style"
+          },
+          "simplified_scope": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Simplified Scope"
+          },
+          "code_architecture": {
+            "type": "string",
+            "enum": [
+              "object-component",
+              "ecs"
+            ],
+            "title": "Code Architecture"
+          },
+          "camera_mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fit-scene",
+                  "follow-player",
+                  "first-person",
+                  "side-scroll"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Mode"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "core_experience",
+          "perspective_style",
+          "simplified_scope",
+          "code_architecture"
+        ],
+        "title": "DemoDirectionDraft"
+      },
+      "GameProjectScaffold": {
+        "properties": {
+          "root_path": {
+            "type": "string",
+            "title": "Root Path"
+          },
+          "initialization_status": {
+            "type": "string",
+            "enum": [
+              "generated",
+              "existing"
+            ],
+            "title": "Initialization Status"
+          },
+          "project_kind": {
+            "type": "string",
+            "enum": [
+              "sceneops_created",
+              "existing_unadopted",
+              "legacy"
+            ],
+            "title": "Project Kind",
+            "default": "legacy"
+          },
+          "architecture_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Architecture Version"
+          },
+          "design_version": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Design Version"
+          },
+          "baseline_commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Commit"
+          },
+          "package_manager": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "pnpm"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Package Manager"
+          },
+          "entry_file": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry File"
+          },
+          "generated_files": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Generated Files"
+          },
+          "check_command": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Check Command"
+          },
+          "build_command": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Command"
+          },
+          "preview_command": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preview Command"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "root_path",
+          "initialization_status"
+        ],
+        "title": "GameProjectScaffold"
+      },
+      "GameTechnicalPlan": {
+        "properties": {
+          "target_platform": {
+            "type": "string",
+            "const": "web",
+            "title": "Target Platform",
+            "default": "web"
+          },
+          "engine": {
+            "type": "string",
+            "const": "threejs",
+            "title": "Engine",
+            "default": "threejs"
+          },
+          "code_architecture": {
+            "type": "string",
+            "enum": [
+              "object-component",
+              "ecs"
+            ],
+            "title": "Code Architecture"
+          },
+          "architecture_label": {
+            "type": "string",
+            "title": "Architecture Label"
+          },
+          "selection_method": {
+            "type": "string",
+            "enum": [
+              "manual",
+              "ai"
+            ],
+            "title": "Selection Method"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Rationale"
+          },
+          "tradeoffs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Tradeoffs"
+          },
+          "ecs_library": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "miniplex"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ecs Library"
+          },
+          "scaffold": {
+            "$ref": "#/components/schemas/GameProjectScaffold"
+          },
+          "selected_at": {
+            "type": "string",
+            "title": "Selected At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code_architecture",
+          "architecture_label",
+          "selection_method",
+          "rationale",
+          "tradeoffs",
+          "scaffold",
+          "selected_at"
+        ],
+        "title": "GameTechnicalPlan"
+      },
+      "GitVersion": {
+        "properties": {
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "commit": {
+            "type": "string",
+            "title": "Commit"
+          },
+          "tag": {
+            "type": "string",
+            "title": "Tag"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "number",
+          "commit",
+          "tag"
+        ],
+        "title": "GitVersion"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "InitialDemoDirection": {
+        "properties": {
+          "direction_id": {
+            "type": "string",
+            "pattern": "^direction_[a-f0-9]{32}$",
+            "title": "Direction Id"
+          },
+          "core_experience": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Core Experience"
+          },
+          "perspective_style": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Perspective Style"
+          },
+          "target_platform": {
+            "type": "string",
+            "const": "web",
+            "title": "Target Platform",
+            "default": "web"
+          },
+          "code_architecture": {
+            "type": "string",
+            "enum": [
+              "object-component",
+              "ecs"
+            ],
+            "title": "Code Architecture"
+          },
+          "simplified_scope": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Simplified Scope"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": true
+          },
+          "camera_mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fit-scene",
+                  "follow-player",
+                  "first-person",
+                  "side-scroll"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Mode"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "direction_id",
+          "core_experience",
+          "perspective_style",
+          "code_architecture",
+          "simplified_scope"
+        ],
+        "title": "InitialDemoDirection",
+        "description": "A confirmed first-demo scope; it is not a full GDD or production result."
+      },
+      "JourneyChange": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "base_revision": {
+            "type": "integer",
+            "title": "Base Revision"
+          },
+          "before_outline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Outline"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "before_cards": {
+            "items": {
+              "$ref": "#/components/schemas/ProductionCard"
+            },
+            "type": "array",
+            "title": "Before Cards"
+          },
+          "after_outline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Outline"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "after_cards": {
+            "items": {
+              "$ref": "#/components/schemas/ProductionCard"
+            },
+            "type": "array",
+            "title": "After Cards"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "rejected"
+            ],
+            "title": "Status",
+            "default": "pending"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "base_revision",
+          "before_outline",
+          "before_cards",
+          "after_outline",
+          "after_cards",
+          "rationale"
+        ],
+        "title": "JourneyChange"
+      },
+      "JourneyCommand": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,100}$",
+            "title": "Request Id"
+          },
+          "expected_revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Expected Revision"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "message",
+              "save_draft",
+              "start_grill",
+              "start_card_alignment",
+              "finish_card_alignment",
+              "generate_outline",
+              "save_outline",
+              "confirm_demo_direction",
+              "discuss_game",
+              "set_execution_policy",
+              "organize_production",
+              "confirm_version",
+              "confirm_stack",
+              "recommend_architecture",
+              "confirm_technical_plan",
+              "generate_cards",
+              "save_cards",
+              "save_domain",
+              "assign_card_domains",
+              "accept_change",
+              "reject_change",
+              "select_card",
+              "clear_card",
+              "enable_git",
+              "choose_model_source",
+              "new_modeling",
+              "open_modeling",
+              "close_modeling",
+              "new_conversation",
+              "select_conversation",
+              "delete_conversation"
+            ],
+            "title": "Operation"
+          },
+          "domain_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "planning",
+                  "assets-animation",
+                  "world",
+                  "gameplay",
+                  "lookdev",
+                  "ui-audio",
+                  "delivery"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain Id"
+          },
+          "domain_work": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProductionDomainWork"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "domain_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "planning",
+                    "assets-animation",
+                    "world",
+                    "gameplay",
+                    "lookdev",
+                    "ui-audio",
+                    "delivery"
+                  ]
+                },
+                "type": "array",
+                "maxItems": 7
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain Ids"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 16000,
+            "title": "Text",
+            "default": ""
+          },
+          "main_scroll_top": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Main Scroll Top"
+          },
+          "outline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Outline"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cards": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProductionCard"
+                },
+                "type": "array",
+                "maxItems": 30
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cards"
+          },
+          "accept_assumptions": {
+            "type": "boolean",
+            "title": "Accept Assumptions",
+            "default": false
+          },
+          "question_message_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question Message Id"
+          },
+          "option_index": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 2.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Option Index"
+          },
+          "card_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Card Id"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "change_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change Id"
+          },
+          "model_source": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "import",
+                  "create"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Source"
+          },
+          "modeling_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modeling Id"
+          },
+          "context_draft": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 16000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Draft"
+          },
+          "core_experience": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Core Experience"
+          },
+          "perspective_style": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Perspective Style"
+          },
+          "simplified_scope": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 8000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Simplified Scope"
+          },
+          "code_architecture": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "object-component",
+                  "ecs"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code Architecture"
+          },
+          "selection_method": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "ai"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection Method"
+          },
+          "execution_policy": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "ask",
+                  "full-access"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Policy"
+          },
+          "camera_mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fit-scene",
+                  "follow-player",
+                  "first-person",
+                  "side-scroll"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Mode"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "request_id",
+          "expected_revision",
+          "operation"
+        ],
+        "title": "JourneyCommand"
+      },
+      "JourneyMessage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "live",
+              "mock",
+              "planned"
+            ],
+            "title": "Mode",
+            "default": "live"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningQuestion"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reply_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reply To"
+          },
+          "modeling_block": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Modeling Block"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "text",
+          "created_at"
+        ],
+        "title": "JourneyMessage"
+      },
+      "JourneyStreamEvent": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "status",
+              "text_delta",
+              "reasoning_delta",
+              "complete",
+              "error"
+            ],
+            "title": "Type"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text",
+            "default": ""
+          },
+          "state": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningJourney"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "type"
+        ],
+        "title": "JourneyStreamEvent"
+      },
+      "JourneyVersion": {
+        "properties": {
+          "number": {
+            "type": "integer",
+            "title": "Number"
+          },
+          "confirmed_at": {
+            "type": "string",
+            "title": "Confirmed At"
+          },
+          "outline": {
+            "$ref": "#/components/schemas/Outline"
+          },
+          "stack": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "threejs"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stack"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/ProductionCard"
+            },
+            "type": "array",
+            "title": "Cards"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "number",
+          "confirmed_at",
+          "outline"
+        ],
+        "title": "JourneyVersion"
+      },
+      "Outline": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "experience": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Experience"
+          },
+          "core_loop": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Core Loop"
+          },
+          "scope": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Scope"
+          },
+          "acceptance": {
+            "type": "string",
+            "maxLength": 8000,
+            "minLength": 1,
+            "title": "Acceptance"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "experience",
+          "core_loop",
+          "scope",
+          "acceptance"
+        ],
+        "title": "Outline"
+      },
+      "PlanningJourney": {
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "root_path": {
+            "type": "string",
+            "title": "Root Path"
+          },
+          "revision": {
+            "type": "integer",
+            "title": "Revision",
+            "default": 0
+          },
+          "collaboration": {
+            "type": "string",
+            "const": "solo",
+            "title": "Collaboration",
+            "default": "solo"
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "idea",
+              "grill",
+              "outline",
+              "stack",
+              "cards"
+            ],
+            "title": "Stage",
+            "default": "idea"
+          },
+          "production_basis": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProductionBasis"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/JourneyMessage"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "card_conversations": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/CardConversation"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Card Conversations"
+          },
+          "active_conversation_ids": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Active Conversation Ids"
+          },
+          "card_messages": {
+            "additionalProperties": {
+              "items": {
+                "$ref": "#/components/schemas/JourneyMessage"
+              },
+              "type": "array"
+            },
+            "type": "object",
+            "title": "Card Messages"
+          },
+          "card_alignment_summaries": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Card Alignment Summaries"
+          },
+          "card_alignment_summary_ids": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Card Alignment Summary Ids"
+          },
+          "card_alignment_start_ids": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Card Alignment Start Ids"
+          },
+          "outline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Outline"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "versions": {
+            "items": {
+              "$ref": "#/components/schemas/JourneyVersion"
+            },
+            "type": "array",
+            "title": "Versions"
+          },
+          "stack": {
+            "anyOf": [
+              {
+                "type": "string",
+                "const": "threejs"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stack"
+          },
+          "initial_demo_direction": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/InitialDemoDirection"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "demo_direction_draft": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DemoDirectionDraft"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "execution_policy": {
+            "type": "string",
+            "enum": [
+              "ask",
+              "full-access"
+            ],
+            "title": "Execution Policy",
+            "default": "ask"
+          },
+          "technical_plan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GameTechnicalPlan"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "architecture_recommendation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ArchitectureRecommendation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/ProductionCard"
+            },
+            "type": "array",
+            "title": "Cards"
+          },
+          "domain_work": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ProductionDomainWork"
+            },
+            "propertyNames": {
+              "enum": [
+                "planning",
+                "assets-animation",
+                "world",
+                "gameplay",
+                "lookdev",
+                "ui-audio",
+                "delivery"
+              ]
+            },
+            "type": "object",
+            "title": "Domain Work"
+          },
+          "composer_draft": {
+            "type": "string",
+            "title": "Composer Draft",
+            "default": ""
+          },
+          "model_calls": {
+            "type": "integer",
+            "title": "Model Calls",
+            "default": 0
+          },
+          "production_preparation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Production Preparation"
+          },
+          "git_versions": {
+            "items": {
+              "$ref": "#/components/schemas/GitVersion"
+            },
+            "type": "array",
+            "title": "Git Versions"
+          },
+          "card_branches": {
+            "items": {
+              "$ref": "#/components/schemas/CardBranch"
+            },
+            "type": "array",
+            "title": "Card Branches"
+          },
+          "active_card_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Card Id"
+          },
+          "main_scroll_top": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Main Scroll Top",
+            "default": 0
+          },
+          "changes": {
+            "items": {
+              "$ref": "#/components/schemas/JourneyChange"
+            },
+            "type": "array",
+            "title": "Changes"
+          },
+          "modeling_sessions": {
+            "items": {
+              "$ref": "#/components/schemas/CardModelingSession"
+            },
+            "type": "array",
+            "title": "Modeling Sessions"
+          },
+          "active_modeling_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Modeling Id"
+          },
+          "cost_notice": {
+            "type": "string",
+            "title": "Cost Notice",
+            "default": "每次发送或生成通常调用一次所选模型；结构化结果校验失败时，系统会把错误原因告知同一模型并自动重试一次。费用未知，不自动切换提供方。"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "project_id",
+          "root_path"
+        ],
+        "title": "PlanningJourney"
+      },
+      "PlanningQuestion": {
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "maxLength": 1200,
+            "minLength": 1,
+            "title": "Prompt"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionOption"
+            },
+            "type": "array",
+            "maxItems": 3,
+            "minItems": 2,
+            "title": "Options"
+          },
+          "recommended_index": {
+            "type": "integer",
+            "maximum": 2.0,
+            "minimum": 0.0,
+            "title": "Recommended Index"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "prompt",
+          "options",
+          "recommended_index"
+        ],
+        "title": "PlanningQuestion"
+      },
+      "ProductionBasis": {
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          },
+          "workspace_id": {
+            "type": "string",
+            "title": "Workspace Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "task_id",
+          "workspace_id"
+        ],
+        "title": "ProductionBasis"
+      },
+      "ProductionCard": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,80}$",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Description"
+          },
+          "dependencies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Dependencies"
+          },
+          "acceptance": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1,
+            "title": "Acceptance"
+          },
+          "status": {
+            "type": "string",
+            "const": "planned",
+            "title": "Status",
+            "default": "planned"
+          },
+          "source_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 60,
+            "title": "Source Ids"
+          },
+          "domain_ids": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "planning",
+                "assets-animation",
+                "world",
+                "gameplay",
+                "lookdev",
+                "ui-audio",
+                "delivery"
+              ]
+            },
+            "type": "array",
+            "maxItems": 7,
+            "title": "Domain Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "acceptance"
+        ],
+        "title": "ProductionCard"
+      },
+      "ProductionDomainWork": {
+        "properties": {
+          "brief": {
+            "type": "string",
+            "maxLength": 8000,
+            "title": "Brief",
+            "default": ""
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "not-started",
+              "graybox",
+              "refinement",
+              "review"
+            ],
+            "title": "Stage",
+            "default": "not-started"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "ProductionDomainWork"
+      },
+      "QuestionOption": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "description"
+        ],
+        "title": "QuestionOption"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

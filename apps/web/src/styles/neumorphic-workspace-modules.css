@@ -1,0 +1,276 @@
+/* Project, integrated editor, agent and utility-module surfaces. */
+
+.workbench-root .integrated-module,
+.workbench-root .agent-task-workbench,
+.workbench-root .production-module-view,
+.workbench-root .current-modeling-tool {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+}
+
+.workbench-root .integrated-module-header,
+.workbench-root .current-modeling-tool > header {
+  border-color: rgb(88 101 122 / 14%);
+  background: var(--neu-base);
+  box-shadow:
+    inset 0 2px 3px rgb(184 188 194 / 44%),
+    inset 0 -2px 3px rgb(255 255 255 / 62%);
+}
+
+.workbench-root .integrated-module-header span,
+.workbench-root .current-modeling-tool > header :is(small, span),
+.workbench-root .current-modeling-guidance,
+.workbench-root .current-modeling-context small {
+  color: var(--neu-ink-secondary);
+}
+
+.workbench-root .integrated-draft {
+  border: 0;
+  border-radius: var(--neu-radius);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+}
+
+.workbench-root .integrated-draft:focus-within {
+  box-shadow: var(--neu-focus-inset);
+}
+
+.workbench-root .integrated-draft textarea {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.workbench-root .workspace-projects {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+}
+
+.workbench-root .workspace-projects > header,
+.workbench-root .workspace-project-summary,
+.workbench-root .workspace-project-actions,
+.workbench-root .workspace-project-error {
+  color: var(--neu-ink-secondary);
+}
+
+.workbench-root .workspace-project-create,
+.workbench-root .workspace-project-card {
+  border: 0;
+  border-radius: var(--neu-radius);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition),
+    background-color var(--neu-transition);
+}
+
+.workbench-root .workspace-project-create:hover,
+.workbench-root .workspace-project-card:hover {
+  border-color: transparent;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover);
+}
+
+.workbench-root .workspace-project-card.is-current {
+  border-color: transparent;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .workspace-project-card small,
+.workbench-root .workspace-project-card p,
+.workbench-root .workspace-project-card dd,
+.workbench-root .workspace-project-card dt {
+  color: var(--neu-ink-secondary);
+}
+
+.workbench-root .workspace-project-actions button,
+.workbench-root .workspace-project-error button {
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root .workspace-project-error {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--critical);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root .tool-kicker {
+  color: var(--neu-accent-ink);
+}
+
+/* Current modeling tool */
+.workbench-root .current-modeling-state {
+  color: var(--neu-ink-secondary);
+}
+
+.workbench-root .current-modeling-state > strong {
+  color: var(--neu-ink);
+}
+
+.workbench-root .current-modeling-tool button,
+.workbench-root .current-modeling-state button {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root .current-modeling-tool button:hover:not(:disabled) {
+  color: var(--neu-accent-ink);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.workbench-root .current-modeling-card-list button {
+  padding: 11px 12px;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root .current-modeling-card-list button:active {
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .current-modeling-card-list :is(small, span) {
+  color: var(--neu-ink-secondary);
+}
+
+.workbench-root .current-modeling-context,
+.workbench-root .current-modeling-guidance {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .current-modeling-guidance {
+  border-left: 0;
+}
+
+.workbench-root .current-modeling-error {
+  color: var(--critical);
+}
+
+/* Agent task and production status editors */
+.workbench-root .agent-task-workbench textarea {
+  border: 0;
+  border-radius: var(--neu-radius);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+}
+
+.workbench-root .agent-task-card {
+  border-color: rgb(88 101 122 / 14%);
+}
+
+.workbench-root :is(
+    .agent-authorization,
+    .agent-task-activity,
+    .agent-task-timeline .agent-task-card,
+    .agent-game-runtime
+  ) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root .agent-action-tree {
+  border-left: 0;
+  padding: 4px 8px;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .agent-action-tree li::before {
+  left: -4px;
+  background: var(--neu-ink-muted);
+  box-shadow:
+    1px 1px 2px rgb(184 188 194 / 70%),
+    -1px -1px 2px rgb(255 255 255 / 84%);
+}
+
+.workbench-root .agent-action-tree li[data-state="succeeded"]::before {
+  background: var(--success);
+}
+
+.workbench-root .agent-task-workbench :is(header p, small, .agent-task-empty),
+.workbench-root .agent-task-activity :is(span, small),
+.workbench-root .agent-task-records,
+.workbench-root .agent-game-runtime dt,
+.workbench-root .production-module-view :is(small, header > span, .production-empty) {
+  color: var(--neu-ink-secondary);
+}
+
+.workbench-root .production-steps {
+  border-color: rgb(88 101 122 / 14%);
+}
+
+.workbench-root .production-steps li {
+  border-color: rgb(88 101 122 / 14%);
+}
+
+.workbench-root .production-steps li[data-state="running"] strong,
+.workbench-root .production-node-status[data-state="running"] {
+  color: var(--neu-accent-ink);
+}
+
+.workbench-root .production-artifact-preview :is(img, audio, video),
+.workbench-root .agent-game-runtime iframe {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base-soft);
+  box-shadow: var(--neu-inset-sm);
+}
+
+.workbench-root .production-module-view pre,
+.workbench-root .agent-task-card pre,
+.workbench-root .agent-task-records pre {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-sm);
+}
+
+/* Common truthful execution badges: color is supplementary, not the only cue. */
+.workbench-root :is([data-mode="live"], [data-state="succeeded"], [data-status="ready"]) {
+  --state-ink: var(--success);
+}
+
+.workbench-root :is([data-mode="mock"], [data-mode="planned"], [data-state="running"]) {
+  --state-ink: var(--neu-accent-ink);
+}
+
+.workbench-root :is([data-mode="blocked"], [data-state="failed"], [data-status="failed"]) {
+  --state-ink: var(--critical);
+}
+
+.workbench-root :is(
+    .conversation-mode,
+    .production-node-status,
+    .card-model-generation-status,
+    .environment-status span
+  ) {
+  color: var(--state-ink, var(--neu-ink-secondary));
+}
+
+@media (max-width: 700px) {
+  .workbench-root .workspace-project-create,
+  .workbench-root .workspace-project-card,
+  .workbench-root :is(.agent-authorization, .agent-game-runtime) {
+    border-radius: var(--neu-radius-sm);
+  }
+}

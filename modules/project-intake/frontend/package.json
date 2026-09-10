@@ -1,0 +1,22 @@
+{
+  "name": "@sceneops/project-intake",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "test": "node ../../../scripts/frontend-test.mjs src/tests"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "react": "19.2.8"
+  },
+  "dependencies": {
+    "@sceneops/workspace-client": "workspace:*",
+    "@tanstack/react-query": "5.90.21"
+  }
+}

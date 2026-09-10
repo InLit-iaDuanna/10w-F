@@ -1,0 +1,143 @@
+# Asset Factory
+
+`CardAssetWorkflow.observeConversation` 默认开启。没有模型产物时，它只把对话消息记作需求基线，等待用户点击“确认并建模”；首版成功后，主对话中的新一轮模型描述会触发同一资产的真实草稿更新。稳定消息 ID 保证同一轮不会重复执行。
+
+Asset Factory turns a canonical AssetSpec and source `.blend` file into reviewed,
+validated GLB/FBX artifacts and an immutable AssetVersion. One versioned workflow
+is reused by the Find My Way Home key and Warehouse Escape obstacle fixtures.
+
+## 卡片模型工作流（2026-09-06）
+
+制作卡片现在有两条接入当前 Git 卡片工作树的真实路径：
+
+- **导入**：选择 GLB 或 FBX，点击“导入并检查”后由 Blender 5.1 读取；原文件保留，另存 `.blend`、可交互预览 GLB、Unity 交换 FBX 和 manifest。
+- **场景投放导入**：把一个或多个 GLB / FBX 直接拖入 3D 世界预览，会复用同一导入检查，成功版本自动存入项目资产库并加入当前场景。
+- **新建**：复用卡片的唯一建模对话。用户点击“确认并建模”后请求首份结构化方案，并由固定 Blender 工作器用允许的 cube、sphere、cylinder、cone 生成真实草稿；右侧 Three.js 面板随成功结果刷新。后续回答在同一会话资产上追加版本，旧版本保留。
+- **归一化**：填写目标最大边（米）后另存新版本，统一缩放、水平居中并落到 Z=0；不覆盖原文件或旧版本。
+
+实时请求以 `project_id + card_id + session_id + trigger_message_id` 唯一识别。相同消息的已完成结果直接复用，不会重复调用模型或 Blender；失败后必须显式设置重试。组件挂载时把已有历史作为基线，只处理随后出现的新消息，因此刷新或重新打开长对话不会补跑旧内容。
+
+工作流不自动提交或合并 Git，不运行游戏、构建、渲染或 Demo。CodeBuddy CLI 支持文字方案；其当前非交互合同没有本地参考图参数，所以带参考图时需选择 Codex CLI 或支持视觉输入的 OpenAI 兼容模型，不能自动换提供方。当前没有自动执行 GLB 压缩；压缩继续作为显式后续动作。
+
+网络合同由 `contracts/card-assets.openapi.json` 和生成的 TypeScript 类型承载；运行 `pnpm generate:card-assets` 更新。实际产物在当前卡片分支的 `assets/models/<card_id>/<asset_id>/` 下，执行日志留在应用 `.local` 数据目录。
+
+## Workflow
+
+```text
+preflight -> clean -> uv/material -> LOD -> collider -> turntable/AOV
+          -> validate -> export -> publish
+```
+
+Optional LOD/collider nodes report a state and reason; they never silently skip.
+Geometry, UV/material, and stable-identity gates are blocking. Failed gates stop
+before export and publication.
+
+## Mutation safety
+
+Every execution accepts an `AssetChangeSet` carrying base version, previous and
+proposed values, rationale, impact/risk, validation, rollback, and approval
+requirements. `dry_run=true` produces a `planned` preview and does not call an
+adapter. A non-dry run pauses in `waiting_approval` unless the ChangeSet is
+approved. Before any Blender call, the service verifies the complete ChangeSet
+and normalized command scope against a server-owned approval record and resolves
+the project root from trusted project metadata. Before mutation, a versioned
+`.blend` snapshot is created. Failures after that point trigger a typed rollback
+command.
+
+Blender exports first land under the run-owned `.sceneops/asset-factory/`
+directory. Publication validates those bytes, creates the final GLB, FBX, and
+manifest with no-clobber semantics, verifies them through the catalog artifact
+boundary, and removes only newly created files if catalog publication fails.
+Failed publication also discards its finalized candidate so a corrected retry is
+not poisoned by stale metadata.
+
+Idempotency is explicit: the service requires an injected request-ledger port.
+The bundled in-memory implementation atomically reserves run IDs and caller keys,
+and replays a prior terminal result only for the exact same validated request.
+Reusing a key for different input fails with `IDEMPOTENCY_CONFLICT`; cancellation
+is accepted only for a reserved run, so an unknown ID cannot plant a future
+cancel. The Blender worker separately binds retry records to the complete command
+in server-owned operation storage outside project content.
+
+## Public surface
+
+- Python: `asset_factory` exports pipeline contracts, `AssetPipelineService`,
+  request-ledger/finalized-candidate ports and in-memory adapters, jobs, and
+  `create_router`.
+- TypeScript: `frontend/src/index.ts` exports the lazy Asset Factory/Validation
+  contributions, visible run-state builder, and `importProjectAssetFile` for host-owned scene drop flows.
+- Blender: only the public `sceneops_blender` typed adapter is accepted.
+- Asset catalog: only public `asset_library` models/service are used.
+
+### 按推荐安装内置资产
+
+`BuiltinProjectAssets.install_selected(project_id, card_id, selections)` 接受内置目录中的真实 `asset_id`，或 `BuiltinAssetSelection`（可附用途和推荐理由）。它只把所选 GLB 及这些条目实际引用的像素图集、共享动作复制到当前卡片工作树；多个角色引用同一动作文件时只复制一次。未知 ID、格式无效的选择和符号链接目标会被拒绝，已有普通文件原样保留。
+
+返回值保留 `installed_files`、`preserved_files`、`catalog_path`，并新增只含所选条目的 `catalog` 与逐项 `materialization`。条目记录 `source_asset_id`、素材包 ID／版本和空的 `project_asset_id`，避免把推荐目录身份误当成项目资产身份；`recommendation_state`、`provision_state` 与 `copy_state` 分别表示已推荐、已提供给运行时以及本次实际复制或保留。选择不同且已有目录索引时会创建递增的新索引文件，不覆盖原索引。
+
+原有 `install_pack(project_id, card_id)` 继续提供整包安装合同，字段和重复调用行为保持兼容。
+
+## Execution modes
+
+- `live`: bundled bridge actually invoked Blender now.
+- `cached`: a result loaded from trusted live-run storage, keyed by workflow slot
+  plus operation, and bound to the normalized full command and current source
+  checksum. Verified blobs materialize each new run's working/output paths and
+  are checked for size and checksum before use.
+- `mock`: deterministic fixture adapter; Blender not invoked.
+- `planned`: dry-run only.
+- `blocked`: requested Blender integration is unavailable.
+
+Selection is explicit. The live service does not silently auto-fallback.
+
+## Tests
+
+```text
+PYTHONPATH=modules/asset-library/backend/src:integrations/blender-addon/src:modules/asset-factory/backend/src python3 -m unittest discover -s modules/asset-factory/backend/tests -v
+node --test modules/asset-factory/frontend/src/tests/*.test.ts
+```
+
+卡片路径的最小真实 Blender 烟测是显式 opt-in：
+
+```text
+SCENEOPS_REAL_BLENDER_SMOKE=1 node scripts/python.mjs -m unittest modules.asset-factory.backend.tests.test_card_asset_workflow_smoke.CardAssetWorkflowSmoke.test_real_generate_import_and_normalize -v
+```
+
+它只在临时 Git 工程中检查新建、GLB/FBX 导入和归一化；不会写当前用户项目。实时多版本和真实 CodeBuddy → Blender 链路分别由 `test_real_live_dialogue_versions` 与 `test_real_codebuddy_live_dialogue_to_blender` 覆盖，并且都需要显式环境变量才运行。
+
+## Known limitations
+
+This starting commit had no core ChangeSet package, module runtime, durable run
+ledger, remote artifact store, API composition root, generated TypeScript client,
+Unity module, or Blender executable. The module-local Pydantic ChangeSet is an
+explicit public asset-domain contract pending core adoption; distributed
+idempotency and finalized-candidate persistence, shell/OpenAPI/Unity wiring, and
+a filesystem-isolated Blender worker are `planned`. Direct subprocess transport
+refuses project `.blend` inputs; the current host reports Blender `blocked`
+unless an executable is explicitly configured.
+
+## 概念与资产独立工作台
+
+`apps/labs/concept-assets/README.md` 提供一条命令启动的 Web/API。新增公开 `ConceptAssetHandoff`、`asset_spec_from_concept`、`ConceptAssetLab`、`LabAction`、`LabSnapshot`、`create_lab_router`；工厂声明依赖 concept-lab，消费其公开批准草稿，不导入模块内部文件。前端公开 `ConceptAssetsWorkbench`，实际调用原领域服务。所有外部适配器固定 mock，未启动 Blender 或渲染。本轮测试仅见入口烟测记录；原测试套件 not run / pending approval。
+
+统一应用现公开 `loadIntegratedWorkbench()`；空态、自有草稿、样例边界与验证限制见 [统一编辑器说明](docs/unified-workbench.md)。
+
+同一卡片的生成与归一化在项目／卡片锁内重读方案或资产记录。重复生成会复用既有状态判断并拒绝再次执行；并发归一化基于最新版本追加，已经成功写出的版本不会被旧元数据覆盖。
+
+### Web 原生源回流
+
+公开 `preserve_native_source` 检查原生源与自包含 GLB，将成功候选复制到登记工作区的 `assets/blender` 与 `public/sceneops-assets`。不可变产物不指向正在编辑的文件；相同候选可重读，不覆盖不同已有内容。源路径由任务与资产目录解析，模型不能直接调用文件保存函数。流程不强制生成 FBX。
+
+## Tripo 创建渠道
+
+在“创建模型”的“创建渠道”中选择 **Tripo · AI 3D 生成**，保存 API Key 和模型版本，再选择文字或图片输入。提交按钮明确说明内容会发给 Tripo 并按账户计费；对话消息本身不会自动提交 Tripo。切换渠道会暂停本地自动建模，左侧确认按钮提示使用 Tripo 面板。
+
+支持文字（最多 1024 字符）和单张 PNG/JPEG/WebP（最多 10 MiB）。默认 v3.1-20260211，可选 v2.5-20250123 与 P1-20260311。接入 v2 OpenAPI，图片通过 `/upload/sts` 换取 image_token。预览支持 Meshopt 解码。
+
+任务按项目、卡片、会话及请求 ID 持久化，同一请求不重复提交。完成后重新读取下载地址并保存本地 GLB（最大 100 MiB），可预览、下载或显式导入当前卡片，随后沿用检查、归一化和入库流程。下载连接到已验证的公网 IP，保持原始 TLS 主机验证，拒绝重定向且不带 API Key。
+
+密钥保存在应用数据库旁的 tripo-secrets.json（0600），不回显、不进入项目 Git。更换密钥后，历史任务继续使用提交时的密钥；旧密钥保留供任务查询。配置成功仅表示已保存，不代表已验证额度。
+
+网络中断导致提交结果不明时显示 submission_unknown，不自动重发，以免重复扣费；需要到 Tripo 控制台核实。关闭页面不取消远端任务，重新打开会恢复记录。
+
+接口与组件测试采用替身服务，不消耗真实账户额度。官方参考：[Generation](https://platform.tripo3d.ai/docs/generation)、[Upload](https://platform.tripo3d.ai/docs/upload)、[Task](https://platform.tripo3d.ai/docs/task)。

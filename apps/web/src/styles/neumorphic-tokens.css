@@ -1,0 +1,399 @@
+/*
+ * SceneOps Forge · Neumorphic material system
+ *
+ * Physical model
+ * - One fixed light source: top-left.
+ * - Bright shadow always travels to -x/-y.
+ * - Dark shadow always travels to +x/+y.
+ * - A nearby pointer occludes the light, so hover shadows get smaller.
+ * - Pressed/selected controls become inset; they never jump with translate.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Existing SceneOps semantic tokens, remapped to the soft material. */
+  --canvas: #e0e5ec;
+  --surface-1: #e0e5ec;
+  --surface-2: #e0e5ec;
+  --surface-3: #e7ebf1;
+  --surface-hover: #e4e9f0;
+  --text-primary: #465064;
+  --text-secondary: #58657a;
+  --text-muted: #5d6779;
+  --text-strong: #333b4b;
+  --accent-blue: #6d5dfc;
+  --accent-violet: #6d5dfc;
+  --home-amber: #5140d8;
+  --spatial-cyan: #2a6e73;
+  --ai-violet: #6d5dfc;
+  --critical: #a53142;
+  --success: #1f6e53;
+  --warning: #7b520f;
+  --info: #5140d8;
+  --border-subtle: rgb(88 101 122 / 12%);
+  --border-default: rgb(88 101 122 / 20%);
+  --border-strong: rgb(70 80 100 / 34%);
+  --focus-ring: #5140d8;
+  --overlay: rgb(63 74 93 / 34%);
+
+  /* Canonical material colors. */
+  --neu-base: #e0e5ec;
+  --neu-base-soft: #f0f0f3;
+  --neu-base-raised: #e7ebf1;
+  --neu-shadow-dark: #b8bcc2;
+  --neu-shadow-light: #ffffff;
+  --neu-accent: #6d5dfc;
+  --neu-accent-ink: #5140d8;
+  --neu-ink: #465064;
+  --neu-ink-secondary: #58657a;
+  --neu-ink-muted: #5d6779;
+
+  /* Elevation is expressed only by a paired shadow from the same light. */
+  --neu-raised-lg:
+    10px 10px 24px rgb(184 188 194 / 88%),
+    -10px -10px 24px rgb(255 255 255 / 94%);
+  --neu-raised:
+    8px 8px 16px rgb(184 188 194 / 90%),
+    -8px -8px 16px rgb(255 255 255 / 96%);
+  --neu-raised-sm:
+    5px 5px 10px rgb(184 188 194 / 88%),
+    -5px -5px 10px rgb(255 255 255 / 94%);
+  --neu-raised-xs:
+    3px 3px 6px rgb(184 188 194 / 82%),
+    -3px -3px 6px rgb(255 255 255 / 90%);
+  --neu-hover:
+    4px 4px 8px rgb(184 188 194 / 86%),
+    -4px -4px 8px rgb(255 255 255 / 94%);
+  --neu-hover-xs:
+    2px 2px 4px rgb(184 188 194 / 82%),
+    -2px -2px 4px rgb(255 255 255 / 90%);
+  --neu-inset:
+    inset 6px 6px 12px rgb(184 188 194 / 88%),
+    inset -6px -6px 12px rgb(255 255 255 / 94%);
+  --neu-inset-sm:
+    inset 4px 4px 8px rgb(184 188 194 / 86%),
+    inset -4px -4px 8px rgb(255 255 255 / 92%);
+  --neu-inset-xs:
+    inset 2px 2px 4px rgb(184 188 194 / 82%),
+    inset -2px -2px 4px rgb(255 255 255 / 90%);
+  --neu-pressed:
+    inset 4px 4px 8px rgb(184 188 194 / 88%),
+    inset -4px -4px 8px rgb(255 255 255 / 94%);
+  --neu-focus-inset:
+    inset 2px 2px 4px rgb(184 188 194 / 72%),
+    inset -2px -2px 4px rgb(255 255 255 / 88%);
+
+  --neu-radius-xs: 8px;
+  --neu-radius-sm: 12px;
+  --neu-radius: 16px;
+  --neu-radius-lg: 22px;
+  --neu-radius-pill: 999px;
+  --neu-transition: 300ms ease-in-out;
+
+  font-family: Manrope, "Noto Sans SC", "PingFang SC", "Microsoft YaHei",
+    system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+* {
+  scrollbar-color: rgb(88 101 122 / 42%) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  border: 3px solid transparent;
+  border-radius: var(--neu-radius-pill);
+  background: rgb(88 101 122 / 38%);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(81 64 216 / 46%);
+  background-clip: padding-box;
+}
+
+html[data-theme="neumorphic"],
+html[data-theme="neumorphic"] body,
+html[data-theme="neumorphic"] #root {
+  background: var(--neu-base);
+}
+
+html[data-theme="neumorphic"] body {
+  color: var(--neu-ink);
+  accent-color: var(--neu-accent);
+  font-family: Manrope, "Noto Sans SC", "PingFang SC", "Microsoft YaHei",
+    system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+::selection {
+  color: var(--neu-ink);
+  background: rgb(109 93 252 / 18%);
+}
+
+/* Reusable primitives for current and future module-owned UI. */
+.neu-surface,
+[data-neu="raised"] {
+  border: 0;
+  border-radius: var(--neu-radius);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised);
+}
+
+.neu-surface--subtle,
+[data-neu="raised-subtle"] {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.neu-inset,
+[data-neu="inset"] {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+}
+
+.neu-pressed,
+[data-neu="pressed"] {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.neu-flat,
+[data-neu="flat"] {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Controls: raised -> smaller shadow on hover -> inset on press. */
+.workbench-root button,
+.workbench-root [role="button"],
+.unified-ai-provider-dialog button,
+.debug-panel button {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition),
+    background-color var(--neu-transition),
+    opacity var(--neu-transition);
+}
+
+.workbench-root button:hover:not(:disabled),
+.workbench-root [role="button"]:hover:not([aria-disabled="true"]),
+.unified-ai-provider-dialog button:hover:not(:disabled),
+.debug-panel button:hover:not(:disabled) {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover);
+}
+
+.workbench-root button:active:not(:disabled),
+.workbench-root [role="button"]:active:not([aria-disabled="true"]),
+.workbench-root button[aria-pressed="true"],
+.workbench-root [role="button"][aria-pressed="true"],
+.unified-ai-provider-dialog button:active:not(:disabled),
+.debug-panel button:active:not(:disabled) {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root button:disabled,
+.workbench-root [role="button"][aria-disabled="true"],
+.unified-ai-provider-dialog button:disabled,
+.debug-panel button:disabled {
+  color: var(--neu-ink-muted);
+  opacity: 0.52;
+  cursor: not-allowed;
+  box-shadow: var(--neu-hover-xs);
+}
+
+/* Text entry is a recessed channel. Focus opens it by reducing depth. */
+.workbench-root input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.workbench-root textarea,
+.workbench-root select,
+.unified-ai-provider-dialog input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+.unified-ai-provider-dialog textarea,
+.unified-ai-provider-dialog select,
+.debug-panel input,
+.debug-panel textarea,
+.debug-panel select {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition),
+    background-color var(--neu-transition);
+}
+
+.workbench-root input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+.workbench-root textarea:focus,
+.workbench-root select:focus,
+.unified-ai-provider-dialog input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+.unified-ai-provider-dialog textarea:focus,
+.unified-ai-provider-dialog select:focus,
+.debug-panel input:focus,
+.debug-panel textarea:focus,
+.debug-panel select:focus {
+  background: var(--neu-base);
+  box-shadow: var(--neu-focus-inset);
+}
+
+.workbench-root input::placeholder,
+.workbench-root textarea::placeholder,
+.unified-ai-provider-dialog input::placeholder,
+.unified-ai-provider-dialog textarea::placeholder {
+  color: var(--neu-ink-muted);
+  opacity: 0.86;
+}
+
+.workbench-root option,
+.unified-ai-provider-dialog option {
+  color: var(--neu-ink);
+  background: var(--neu-base-soft);
+}
+
+.workbench-root input[type="checkbox"],
+.workbench-root input[type="radio"] {
+  accent-color: var(--neu-accent);
+}
+
+/* Range tracks are inset; browser thumbs remain mechanically movable. */
+.workbench-root input[type="range"] {
+  height: 8px;
+  border: 0;
+  border-radius: var(--neu-radius-pill);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-sm);
+  accent-color: var(--neu-accent);
+}
+
+.workbench-root :is(button, input, textarea, select, summary, [role="button"]):focus-visible,
+.unified-ai-provider-dialog :is(button, input, textarea, select, summary):focus-visible,
+.debug-panel :is(button, input, textarea, select, summary):focus-visible {
+  outline: 2px solid var(--neu-accent-ink);
+  outline-offset: 3px;
+}
+
+.workbench-root a,
+.unified-ai-provider-dialog a,
+.debug-panel a {
+  color: var(--neu-accent-ink);
+  text-decoration-color: rgb(81 64 216 / 38%);
+  text-underline-offset: 3px;
+}
+
+.workbench-root hr {
+  height: 1px;
+  border: 0;
+  background: rgb(88 101 122 / 16%);
+  box-shadow:
+    0 1px 0 rgb(184 188 194 / 54%),
+    0 -1px 0 rgb(255 255 255 / 72%);
+}
+
+.workbench-root code,
+.workbench-root pre,
+.unified-ai-provider-dialog code,
+.unified-ai-provider-dialog pre {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+}
+
+.workbench-root pre,
+.unified-ai-provider-dialog pre {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  box-shadow: var(--neu-inset-sm);
+}
+
+.workbench-root table {
+  border-collapse: separate;
+  border-spacing: 0;
+  color: var(--neu-ink);
+}
+
+.workbench-root th {
+  color: var(--neu-ink-secondary);
+  background: rgb(240 240 243 / 46%);
+}
+
+.workbench-root td,
+.workbench-root th {
+  border-color: rgb(88 101 122 / 14%);
+}
+
+/* Native dialogs and overlays are solid material, never glass. */
+.workbench-root dialog,
+.unified-ai-provider-dialog,
+.debug-panel {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  border: 0;
+  border-radius: var(--neu-radius-lg);
+  box-shadow: var(--neu-raised-lg);
+}
+
+.workbench-root dialog::backdrop,
+.unified-ai-provider-dialog::backdrop {
+  background: rgb(63 74 93 / 26%);
+  backdrop-filter: none;
+}
+
+@media (max-width: 700px) {
+  :root {
+    --neu-raised-lg:
+      7px 7px 16px rgb(184 188 194 / 86%),
+      -7px -7px 16px rgb(255 255 255 / 94%);
+    --neu-raised:
+      5px 5px 10px rgb(184 188 194 / 88%),
+      -5px -5px 10px rgb(255 255 255 / 95%);
+    --neu-raised-sm:
+      4px 4px 8px rgb(184 188 194 / 86%),
+      -4px -4px 8px rgb(255 255 255 / 94%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workbench-root *,
+  .workbench-root *::before,
+  .workbench-root *::after,
+  .unified-ai-provider-dialog *,
+  .debug-panel * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+@media (forced-colors: active) {
+  .workbench-root button,
+  .workbench-root input,
+  .workbench-root textarea,
+  .workbench-root select,
+  .workbench-root [role="button"],
+  .unified-ai-provider-dialog,
+  .debug-panel {
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+}

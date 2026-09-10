@@ -1,0 +1,358 @@
+.forge-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  /* Dockview's portal layer can extend past the canvas. It must be clipped,
+     not become a scroll container when an editor control receives focus. */
+  overflow: clip;
+  color: var(--text-primary, #f1ece3);
+  background: var(--canvas);
+}
+
+.forge-shell .dockview-theme-abyss {
+  --dv-color-abyss-dark: var(--canvas);
+  --dv-color-abyss: var(--surface-1);
+  --dv-color-abyss-light: var(--surface-1);
+  --dv-color-abyss-lighter: var(--border-subtle);
+  --dv-color-abyss-primary-text: var(--text-primary);
+  --dv-color-abyss-secondary-text: var(--text-muted);
+  --dv-tabs-and-actions-container-height: 32px;
+  --dv-tabs-and-actions-container-font-size: 12px;
+  --dv-activegroup-visiblepanel-tab-background-color: var(--surface-1);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--canvas);
+  --dv-activegroup-visiblepanel-tab-color: var(--text-primary);
+  --dv-inactivegroup-visiblepanel-tab-color: var(--text-secondary);
+  --dv-activegroup-hiddenpanel-tab-color: var(--text-muted);
+  --dv-inactivegroup-hiddenpanel-tab-color: var(--text-muted);
+  --dv-active-sash-color: var(--accent-blue);
+  --dv-paneview-active-outline-color: var(--accent-blue);
+  --dv-tab-close-icon-size: 13px;
+}
+
+.forge-dock-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* Every native workspace uses the same tab geometry and visual language. */
+.forge-shell .dv-groupview {
+  --dv-tabs-and-actions-container-height: 38px;
+  --dv-tabs-and-actions-container-background-color: var(--canvas);
+  --dv-activegroup-visiblepanel-tab-background-color: var(--surface-2);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--surface-2);
+  --dv-activegroup-hiddenpanel-tab-background-color: transparent;
+  --dv-inactivegroup-hiddenpanel-tab-background-color: transparent;
+  --dv-tab-margin: 5px 2px;
+  --dv-tab-border-radius: 6px;
+}
+
+.forge-shell .dv-groupview > .dv-tabs-and-actions-container {
+  padding: 0 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.forge-shell .dv-groupview .dv-tab {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding-inline: 9px 6px;
+  font-weight: 550;
+}
+
+.forge-shell .dv-groupview .dv-default-tab-action {
+  border-radius: 5px;
+  color: var(--text-muted);
+}
+
+.forge-shell .forge-workflow-sidebar-group {
+  border-left: 1px solid var(--border-subtle);
+  box-shadow: -12px 0 32px rgb(0 0 0 / 10%);
+}
+
+.forge-shell.has-workflow-sidebar .forge-window-menu { display: none; }
+.forge-editor-layout.is-minimal-chrome .forge-region-pull.forge-edge-top { top: 0; }
+.forge-editor-layout.is-workflow-sidebar .current-modeling-tool > header { display: none; }
+
+.forge-area-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 36px;
+  height: 36px;
+  gap: 8px;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border-subtle, #252a30);
+  background: var(--surface-1);
+}
+
+.forge-area-header.is-active {
+  border-bottom-color: color-mix(in srgb, var(--accent-blue) 34%, var(--border-subtle));
+}
+
+.forge-editor-body { container-type: inline-size; }
+.forge-editor-select { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 260px; border: 0 !important; background: transparent !important; padding: 4px 6px; text-align: left; }
+.forge-editor-select:hover { color: var(--accent-blue); }
+.forge-editor-select strong { font-size: 12px; font-weight: 550; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.forge-area-header svg { flex-shrink: 0; width: 15px; height: 15px; }
+.forge-editor-select > svg { color: var(--text-muted); }
+.forge-select-chevron { font-size: 14px; color: var(--text-muted); }
+.forge-area-context { flex: 1; min-width: 0; font-size: 10px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.forge-area-header.is-compact .forge-editor-select { flex: 1; max-width: none; }
+.forge-area-mode { font-size: 10px; color: var(--warning); white-space: nowrap; }
+.forge-area-header nav { display: flex; align-items: center; gap: 2px; flex-shrink: 0; margin-left: auto; }
+.forge-area-header .forge-icon-button { display: grid; place-items: center; width: 28px; min-width: 28px; min-height: 28px; height: 28px; padding: 0; border-radius: 5px; color: var(--text-muted); }
+.forge-area-header .forge-icon-button:hover { color: var(--text-primary); }
+.forge-area-more { position: relative; }
+.forge-area-more > summary { display: grid; place-items: center; width: 28px; height: 28px; cursor: pointer; list-style: none; border-radius: 5px; color: var(--text-muted); }
+.forge-area-more > summary::-webkit-details-marker { display: none; }
+.forge-area-more[open] > summary, .forge-area-more > summary:hover { color: var(--text-primary); background: var(--surface-hover); }
+.forge-area-menu { position: absolute; right: 0; top: 32px; z-index: 80; width: 200px; padding: 6px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--border-default); box-shadow: 0 16px 38px rgb(0 0 0 / 35%); }
+.forge-area-menu p { margin: 5px 8px 7px; font-size: 10px; color: var(--text-muted); }
+.forge-area-menu button { width: 100%; display: flex; gap: 10px; align-items: center; text-align: left; font-size: 12px; border: 0; border-radius: 5px; padding: 7px 8px; }
+.forge-area-menu svg { color: var(--text-muted); }
+
+.forge-area-header button,
+.forge-window-menu button,
+.forge-edge-handle {
+  min-width: 28px;
+  min-height: 28px;
+  color: inherit;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.forge-area-header button:focus-visible,
+.forge-window-menu button:focus-visible,
+.forge-edge-handle:focus-visible {
+  outline: 2px solid var(--focus-ring, #76d9d6);
+  outline-offset: -2px;
+}
+
+.forge-edge-handle {
+  position: absolute;
+  z-index: 30;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  opacity: 1;
+  background: transparent;
+}
+
+.forge-edge-handle-label {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  min-height: 28px;
+  border: 1px solid var(--border-subtle, #252a30);
+  border-radius: 99px;
+  opacity: .5;
+  background: var(--surface-2, #1b1f24);
+  transition: opacity 180ms ease, scale 240ms cubic-bezier(.22, 1, .36, 1);
+  scale: 1;
+}
+
+.forge-edge-handle:hover .forge-edge-handle-label,
+.forge-edge-handle:focus-visible .forge-edge-handle-label,
+.forge-edge-handle[data-judge-visible='true'] .forge-edge-handle-label {
+  opacity: 1;
+  scale: 1.24;
+}
+
+.forge-region-pull[data-collapse-ready='true'] .forge-edge-handle-label {
+  opacity: 1;
+  scale: 1.24;
+  background: var(--accent-blue);
+}
+
+/* The approach area grows only around the grabber, leaving the rest of
+   the edge's existing 12px strip and adjacent tool buttons untouched. */
+.forge-edge-handle::before {
+  content: '';
+  position: absolute;
+}
+.forge-edge-left::before, .forge-edge-right::before {
+  width: 24px;
+  height: 72px;
+  top: calc(50% - 36px);
+}
+.forge-edge-left::before { left: 0; }
+.forge-edge-right::before { right: 0; }
+.forge-edge-top::before, .forge-edge-bottom::before {
+  height: 24px;
+  width: 72px;
+  left: calc(50% - 36px);
+}
+.forge-edge-top::before { top: 0; }
+.forge-edge-bottom::before { bottom: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .forge-edge-handle-label { transition: none; }
+}
+
+.forge-edge-handle:focus-visible .forge-edge-handle-label,
+.forge-edge-handle[data-judge-visible='true'] .forge-edge-handle-label { transition-delay: 0ms; }
+
+.forge-edge-left,
+.forge-edge-right {
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  min-width: 12px;
+}
+
+.forge-edge-left { left: 0; border-left: 2px solid transparent; }
+.forge-edge-right { right: 0; border-right: 2px solid transparent; }
+.forge-edge-top,
+.forge-edge-bottom {
+  right: 0;
+  left: 0;
+  height: 12px;
+  min-height: 12px;
+}
+
+/* Per-panel pull handles only need a focused grab zone around the visible
+   marker. Keeping them off the full header edge prevents the transparent
+   drag target from covering the editor selector and area actions. */
+.forge-region-pull.forge-edge-left,
+.forge-region-pull.forge-edge-right {
+  top: 50%;
+  bottom: auto;
+  height: 72px;
+  width: 12px;
+  transform: translateY(-50%);
+}
+.forge-region-pull.forge-edge-top,
+.forge-region-pull.forge-edge-bottom {
+  right: auto;
+  left: 50%;
+  width: 72px;
+  height: 12px;
+  transform: translateX(-50%);
+}
+.forge-region-pull.forge-edge-top {
+  /* The editor header owns the first 36px. Put the grabber on the content
+     boundary so choosing a tool never competes with a transparent drag zone. */
+  top: 36px;
+}
+.forge-edge-top { top: 0; border-top: 2px solid transparent; }
+.forge-edge-bottom { bottom: 0; border-bottom: 2px solid transparent; }
+.forge-edge-handle:hover, .forge-edge-handle:focus-visible { border-color: var(--accent-blue); }
+.forge-edge-handle:not([data-judge-visible]) .forge-edge-handle-label { min-width: 0; min-height: 0; font-size: 0; border: 0; background: var(--border-strong); }
+.forge-edge-left:not([data-judge-visible]) .forge-edge-handle-label, .forge-edge-right:not([data-judge-visible]) .forge-edge-handle-label { width: 3px; height: 32px; }
+.forge-edge-top:not([data-judge-visible]) .forge-edge-handle-label, .forge-edge-bottom:not([data-judge-visible]) .forge-edge-handle-label { width: 32px; height: 3px; }
+
+.forge-edge-left .forge-edge-handle-label,
+.forge-edge-right .forge-edge-handle-label {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.forge-edge-left .forge-edge-handle-label { left: 0; }
+.forge-edge-right .forge-edge-handle-label { right: 0; }
+.forge-edge-top .forge-edge-handle-label,
+.forge-edge-bottom .forge-edge-handle-label {
+  left: 50%;
+  transform: translateX(-50%);
+}
+.forge-edge-top .forge-edge-handle-label { top: 0; }
+.forge-edge-bottom .forge-edge-handle-label { bottom: 0; }
+
+.forge-edge-handle[data-judge-visible='true'].forge-edge-left,
+.forge-edge-handle[data-judge-visible='true'].forge-edge-right { width: 36px; }
+.forge-edge-handle[data-judge-visible='true'].forge-edge-top,
+.forge-edge-handle[data-judge-visible='true'].forge-edge-bottom { height: 36px; }
+
+.forge-edge-preview {
+  position: absolute;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--spatial-cyan, #58c8c5) 14%, transparent);
+}
+.forge-edge-preview-left { inset: 0 auto 0 0; }
+.forge-edge-preview-right { inset: 0 0 0 auto; }
+.forge-edge-preview-top { inset: 0 0 auto; }
+.forge-edge-preview-bottom { inset: auto 0 0; }
+
+.forge-window-menu {
+  position: absolute;
+  z-index: 40;
+  top: 4px;
+  right: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.forge-window-menu > summary { cursor: pointer; list-style: none; padding: 3px 9px; border-radius: 5px; border: 1px solid transparent; }
+.forge-window-menu > summary::-webkit-details-marker { display: none; }
+.forge-window-menu[open] > summary, .forge-window-menu > summary:hover { background: var(--surface-2); border-color: var(--border-subtle); color: var(--text-primary); }
+.forge-window-options { position: absolute; right: 0; top: 31px; width: 260px; max-height: calc(100dvh - 120px); overflow: auto; padding: 12px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--surface-2); box-shadow: 0 16px 38px rgb(0 0 0 / 35%); }
+.forge-window-options > p { margin: 0 0 12px; font-size: 11px; color: var(--text-secondary); }
+.forge-window-options fieldset { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 10px 0 0; padding: 0; border: 0; }
+.forge-window-options legend { margin-bottom: 6px; color: var(--text-secondary); }
+.forge-window-options button { font-size: 11px; padding: 4px 5px; border: 1px solid var(--border-default); border-radius: 5px; }
+.forge-restore-notice {
+  position: absolute;
+  z-index: 45;
+  top: 8px;
+  right: 8px;
+  max-width: min(440px, calc(100% - 16px));
+  border: 1px solid var(--border-subtle, #252a30);
+  border-radius: 4px;
+  background: var(--surface-2, #1b1f24);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 32%);
+}
+.forge-editor-state { padding: 16px; color: var(--text-secondary, #a5adb6); }
+.forge-editor-state.is-failed { color: var(--critical, #f06d6d); }
+
+@media (prefers-reduced-motion: reduce) {
+  .forge-edge-handle-label { transition: none; }
+}
+.forge-shell .dv-sash.dv-disabled {
+  /* At zero center extent, opposing sashes overlap. An inactive divider
+     must not intercept the enabled divider underneath it. */
+  pointer-events: none;
+}
+
+/* Tool library keeps its Dockview tab as the single title and close control. */
+.forge-editor-layout.is-tool-picker .forge-region-pull.forge-edge-top { top: 0; }
+
+
+/* Quiet edge targets; no permanent grip or additional editor padding. */
+.forge-region-pull { touch-action: none; -webkit-app-region: no-drag; cursor: default; }
+.forge-region-pull::before { content: none; }
+.forge-region-pull:hover { border-color: transparent; }
+.forge-region-pull:focus-visible { outline: 1px solid var(--text-secondary); outline-offset: -2px; }
+.forge-hover-placement { position: fixed; inset: 0; z-index: 10000; cursor: move; touch-action: none; user-select: none; }
+.forge-hover-tool-card { position: fixed; z-index: 10001; width: 44px; height: 34px; display: grid; place-items: center; box-sizing: border-box; pointer-events: none; color: var(--text-secondary); background: var(--surface-2, #292929); border: 1px solid var(--border-strong, #555); border-radius: 7px; box-shadow: 0 5px 18px rgb(0 0 0 / 22%); animation: forge-hover-appear 140ms ease-out; }
+.forge-hover-tool-card svg { width: 28px; height: 22px; stroke: currentColor; stroke-width: 1.5; }
+.forge-hover-tool-card.is-ready { width: 144px; height: 56px; gap: 3px; padding: 7px; color: var(--text-primary); }
+.forge-hover-tool-card.is-ready span { font-size: 10px; white-space: nowrap; color: var(--text-secondary); }
+.forge-hover-tool-card.is-ready svg { width: 30px; height: 24px; }
+.forge-hover-split-preview { position: fixed; pointer-events: none; overflow: hidden; }
+.forge-hover-split-preview path { fill: color-mix(in srgb, var(--text-primary, #eee) 9%, transparent); stroke: var(--border-strong, #777); stroke-width: 1.2; }
+.forge-hover-retraction { position: fixed; inset: 0; z-index: 10000; pointer-events: none; }
+.forge-elastic-left { transform-origin: left center; }
+.forge-elastic-right { transform-origin: right center; }
+.forge-elastic-bottom { transform-origin: center bottom; }
+.forge-elastic-top { transform-origin: center top; }
+.forge-hover-retraction .forge-elastic-left, .forge-hover-retraction .forge-elastic-right { animation: forge-elastic-return-x 260ms cubic-bezier(.2,.8,.3,1) forwards; }
+.forge-hover-retraction .forge-elastic-top, .forge-hover-retraction .forge-elastic-bottom { animation: forge-elastic-return-y 260ms cubic-bezier(.2,.8,.3,1) forwards; }
+@keyframes forge-elastic-return-x { to { transform: scaleX(0); opacity: 0; } }
+@keyframes forge-elastic-return-y { to { transform: scaleY(0); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .forge-hover-retraction { display: none; } }
+
+.forge-hover-error { position: absolute; z-index: 40; bottom: 8px; left: 12px; right: 12px; color: var(--critical, #f06d6d); font-size: 12px; }
+@keyframes forge-hover-appear { from { opacity: 0; transform: scale(.85); } to { opacity: 1; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .forge-hover-tool-card { animation: none; } }
+
+.forge-region-pull.forge-edge-left, .forge-region-pull.forge-edge-right { top: 40px; bottom: 12px; height: auto; width: 8px; min-width: 8px; transform: none; }
+.forge-region-pull.forge-edge-top, .forge-region-pull.forge-edge-bottom { left: 12px; right: 12px; width: auto; height: 8px; min-height: 8px; transform: none; }
+
+/* Only the workspace perimeter owns hover launchers; internal panes have none. */
+.forge-shell > .forge-region-pull.forge-edge-left, .forge-shell > .forge-region-pull.forge-edge-right { top: 12px; bottom: 12px; }
+
+/* The unfolding surface must cover moving sibling content, including its native header. */
+.forge-shell .forge-region-entering { z-index: 2; background: var(--canvas); }
+.forge-shell .dv-render-overlay.forge-region-entering { z-index: 3; }
+
+.forge-hover-placement.is-confirming { cursor: default; }

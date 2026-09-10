@@ -1,0 +1,168 @@
+# World Composer
+
+World Composer 是 SceneOps Forge 的关卡空间生产模块。它把稳定场景身份、空间标注、对象放置提案、世界图、路径/区域、导航、灯光目标、固定相机恢复和关卡门禁组织成一条可审查的数据链；编辑器本身不直接修改 Blender、Unity 或项目文件。
+
+## 2026-09-06：统一应用的 Three.js 环境场景
+
+统一制作旅程现增加一条真实环境草稿路径：用户先把卡片模型的明确版本存入项目资产库，再进入右侧 Three.js 场景。人工模式可从项目资产库加入实际 GLB、在视口选择对象并编辑米制位置、Y 轴旋转和缩放；每次修改都追加 SQLite 场景版本。移除对象也只生成新版本，旧版本仍可按版本号回读。
+
+AI 模式不增加第二个聊天框。左侧唯一主对话把目标交给当前选择的提供方，后端要求模型返回类型化摆放清单，并只接受当前项目资产库中的稳定资产 ID。成功后追加对象和一版场景，同时记录真实 provider/model；请求 ID 提供幂等复用，失败必须由用户明确重试。此路径只修改 SceneOps 的 Three.js 场景草稿，不直接写 Blender、Unity 或用户项目文件。
+
+公开接口位于 `world_composer.environment_scene`，网络合同由 `scripts/export-environment-contracts.py` 生成。定向烟测已覆盖人工加入/变换、真实 GLB 绘制、版本回读、AI 请求幂等，以及真实 `codebuddycli / glm-5.3-flash` 生成 3 棵树的 v3 场景。
+
+人工摆放与 AI 搭建共享 200 个场景对象的写入边界，超限请求在新版本落库前返回 `SCENE_OBJECT_LIMIT`。API 启动会把上次进程遗留的环境请求从 `running` 收尾为失败；相同请求内容可通过 `retry_failed=true` 明确重试，已完成请求仍复用原版本。
+
+当前统一旅程采用两层交互：默认资产库只显示正方形小卡片，点击资产才打开它的预览、版本和属性；点击场景中的实例才显示位置、旋转和缩放。新增资产提供“导入 GLB / FBX”和“新建模型”两个入口，两者都会开启独立会话，并只带入当前项目背景。
+
+`3D 世界`主输入框外、紧邻输入框上方提供“新建模型”和“搭建世界”入口。进入该卡片不显示此前的策划过程记录，正文只承载当前模型或环境制作消息；右侧始终保留同一个世界预览。两类消息分别持久化在模型会话和环境场景中。环境 AI 每次构建还会显式收到当前项目标题、体验目标、核心循环、范围、技术路线和活动卡片，两条制作流因此共享正式项目上下文。
+
+右侧不再重复提供“人工搭建 / AI 搭建”宽按钮。场景预览与项目资产分别位于上下两张圆角卡片中，中间分隔条支持鼠标上下拖动和键盘方向键调整，占比保存在本机供下次恢复；选择资产时世界预览仍保持可见。选择场景中的实例时，下方“项目资产”卡片会直接切换为该模型的位置、旋转和缩放信息；可返回资产库，或点击场景空白处取消选择。
+
+世界预览也是直接导入区。统一宿主接受一个或多个 GLB / FBX 文件投放，调用 Asset Factory 的公开导入检查，把成功版本存入项目资产库，再按最新场景版本逐个加入场景；不支持的扩展名会在资产卡片中直接报错。
+
+每个环境场景持久保存同一份世界尺度：米制、Y 轴向上、右手坐标系、1 米网格、1.8 米参考人物和 3 米默认物体间距。该尺度会进入模型生成上下文，并在资产编辑页可见，避免每件模型各自猜测大小。公开 `GET /api/environment-scenes/{project_id}` 返回场景、版本和 `scale_profile`；人工摆放、AI 摆放及 CLI/Agent 适配器共用这一合同。
+
+## 当前完成范围
+
+- `sceneops_id` 加载、选择、重命名/复制语义，以及父子层级 local/world 换算；
+- 非均匀缩放下的 inverse-transpose normal；
+- 九种 Prompt 09 明列能力：object pin、surface pin、point、region volume、path trace、relation link、state、sketch、voice-to-draft；
+- Asset drag/drop 到完整 `WorldMutationPlan`，再通过 `ChangeSetGateway` 提交到核心 ChangeSet；
+- 可复现 graybox 和 procedural grid recipe；
+- scene/object/camera/path/evidence/context 的 Issue 恢复；
+- 固定相机捕获请求、相机比较同步和 overlay registry；
+- object IDs、collider、NavMesh、paths、depth、normals、masks 和 heatmaps 八种 typed overlay；
+- missing collider、overlapping spawn、unreachable target、NavMesh break、invalid scale、missing interaction relationship 六项门禁；
+- Find My Way Home 与 Warehouse Escape 的确定性 mock 数据。
+
+`packages/scene-viewer` 是本任务获授权实现的无渲染依赖公共基础层。真实 React/R3F/WebGL 宿主、GLB loader、module-runtime 和外部工具连接尚未存在，见“执行真实性”和“限制”。
+
+## 用户
+
+- 关卡设计师和世界设计师；
+- 技术美术、灯光师与导航负责人；
+- 需要精确空间上下文的 QA、AI playtest 和 Issue 审查者。
+
+## 公共编辑器
+
+| ID | 中文标题 | 默认位置 | 权限 |
+|---|---|---|---|
+| `scene.viewport.3d` | 3D 视口 | center，最小 640×400 | `scene:read` |
+| `scene.outliner` | 场景大纲 | left | `scene:read` |
+| `scene.object.inspector` | 对象检查器 | right | `scene:read` |
+| `scene.annotations` | 空间标注 | bottom | `scene:annotate` |
+| `scene.world.graph` | 世界图 | bottom | `scene:read` |
+| `scene.path-region` | 路径与区域 | bottom | `scene:write` |
+| `scene.navmesh` | 导航网格 | bottom | `scene:read` |
+| `scene.lighting` | 灯光目标 | right | `scene:write` |
+
+所有定义均为 lazy loader，支持 follow-global / pinned context，并声明 loading、empty、ready、failed/retry、disconnected、permission-denied、module-disabled 和 stale。3D 视口还声明 suspended；隐藏、未激活或零尺寸时，公共 viewer 生命周期会停止连续渲染。
+
+## 公共命令与事件
+
+命令：
+
+- `scene.annotation.create`
+- `scene.object.place.propose`
+- `scene.issue.restore`
+- `scene.capture.fixed.request`
+- `scene.level.validate`
+- `scene.world.update.propose`
+- `scene.recipe.apply.propose`
+
+事件 payload schemas：
+
+- `scene.annotation.created@1`
+- `scene.object.placement_proposed@1`
+- `scene.level.validated@1`
+
+事件目录只定义模块拥有的 payload；`event_id`、correlation/causation、actor、时间和执行模式 envelope 继续由缺失的 `core-contracts` 提供。
+
+## 数据与合同边界
+
+- `WorldLevelDocument` 是 World Composer 的门禁/编辑投影，不是核心 `SceneSnapshot` 的替代品。
+- `WorldAnnotation` 是模块磁盘文档；未来网络类型必须从核心 Pydantic/OpenAPI 生成。
+- `WorldMutationPlan` 是送入 `ChangeSetGateway` 的领域载荷，不复制核心 ChangeSet 状态机。
+- Asset Browser 只提供 `assetId`/`assetVersionId` 与 drop context；本模块不复制资产仓库。
+- 世界关系仅保存稳定 source/predicate/target，玩法实现属于 `logic-studio`。
+
+详细不变量见 [public-contracts.md](docs/public-contracts.md)。
+
+## 注解类型决策
+
+`design.md` 的概括句列出八类，但 Prompt 09 逐项列出 object pin、surface pin、point、region、path、relation、state、sketch、voice-to-draft，共九项。本模块以更具体的任务提示为准，版本 1 使用九个 discriminant，并用九类 round-trip 测试固定该决定。free-world point 使用 scene reference，不伪造对象；object/surface/relation 使用 object reference。
+
+Surface pin 同时保存 geometry version、triangle indices、barycentric、local/world position 和 local/world normal。拓扑版本变化返回 stale，不会静默吸附到最近表面。
+
+## 对象放置与审批
+
+拖放和键盘命令共享 `createAssetPlacementPlan`。调用方必须提供核心签发的新 `sceneops_id`；asset identity 与 scene instance identity 不得相同。输出包含 base version、前后值、目标工具/对象、理由、预期、影响、风险、验证、回滚、审批角色和 `dryRunRequired: true`。只有 `ChangeSetGateway` 返回的审批结果才能进入 typed adapter。
+
+`DeterministicMockWorldMutationAdapter` 实现 health、capabilities、dry-run、取消、幂等重试、进度、结构化日志、验证、provenance 和 rollback；它始终标为 `mock`，不触碰外部数据。
+
+## Fixtures
+
+- `fixtures/remember-home/world.mock.json`：钥匙、Home Entrance、拾取区域、路径、灯光目标和稳定关系；
+- `fixtures/remember-home/key-placement-input.mock.json`：Asset Browser 等价放置输入；
+- `fixtures/warehouse-escape/world.mock.json`：switch、door、obstacle、exit 的复用场景；
+- `fixtures/issues/navmesh-path-break.mock.json`：可重复的 Warehouse NavMesh 断边；
+- `contracts/examples/object-pin.mock.json`：完整空间注解示例。
+
+## 运行与测试
+
+Node.js 22：
+
+```bash
+npm install --prefix modules/world-composer/frontend
+npm test --prefix packages/scene-viewer
+npm test --prefix modules/world-composer/frontend
+npm run typecheck --prefix packages/scene-viewer
+npm run typecheck --prefix modules/world-composer/frontend
+```
+
+模块测试涵盖 public manifest/API、九类注解、surface stale、空间换算、camera/Issue restore、follow/pin、放置 ChangeSet、安全 adapter、recipes、八编辑器状态、两套 demo 和六项 gate。
+
+## 执行真实性
+
+| 模式 | 当前状态 |
+|---|---|
+| Live | 已接通统一应用中的项目资产目录、Three.js GLB 预览、人工场景版本和受限 AI 摆放；不代表已写回 Blender/Unity。 |
+| Mock | 已实现：纯算法、viewer 端口、mock adapter 和两套项目 fixture 可重复运行。 |
+| Cached | 未提供：仓库没有任何既往真实运行产物，进程内资源 cache 不等于 cached evidence。 |
+| Planned | 固定相机 artifact、空间点位编辑、外部 scene mutation 和 Unity 写回。 |
+| Blocked | Blender/Unity 场景写回、hero build/playtest，以及尚未获得授权或真实处理器的生产步骤。 |
+
+## 降级行为
+
+- Blender/Unity 离线：仍可浏览 mock/已加载的投影、创建注解与 ChangeSet 计划；实际写入显示 disconnected/blocked。
+- Artifact store 离线：固定相机请求显示 disconnected，不生成伪 evidence。
+- NavMesh/collider/scale policy/interaction snapshot 缺失或过期：相关 gate 返回 `blocked + reason`，不会猜测 pass。
+- Voice adapter 缺失：只接受已有 transcript 的 `voice-draft`；不声称完成实时转写。
+
+## 限制
+
+- 当前 editor loaders 返回模块本地、框架无关的可见 screen model；正式 React `EditorProps` 绑定因 shell/core 类型缺失而 Blocked。
+- `module.yaml` 可由本地合同测试核对，但正式 manifest schema、依赖图和 generated catalog 因 `module-runtime` 缺失而 Blocked。
+- 统一旅程已实际解码 GLB 并通过 Three.js/WebGL 绘制；仍没有 fixed-camera artifact、Unity/Blender 场景 mutation 或真实 Cached evidence。
+- Hero fixture 只覆盖 key placement 与 Home Entrance 的 world 数据；pickup/inventory/lock/quest 属于 `logic-studio`。
+- Warehouse fixture 验证同一算法和合同；真实 Unity build 与 E2E 留给后续集成任务。
+
+精确集成缺口见 [integration-status.md](docs/integration-status.md)。
+
+## 2026-09-05：独立 Web 整合更新
+
+原 09 基线中“只有 headless / 无 React Host / 无 core ChangeSet”的限制现已在独立入口解决：从应用根执行 `pnpm --dir apps/labs/world-logic dev`。首次安装、手动动作、准确 smoke 记录见 [工作台 README](../../apps/labs/world-logic/README.md)。旧段落中的完整测试命令只供显式授权后使用，未在本轮执行。
+
+新增公开 `loadWorldWorkbench()`、`loadWorldSession()` 与相应 props/session 类型；既有 headless API 保留。React UI 使用原 `buildWorldEditorScreen`、批注验证、稳定选择和世界变更计划；`scene-viewer/react` 提供按需绘制的 Three 几何代理。
+
+新增公开 Python `world_composer.workbench_router`：`POST /api/world/proposals` 把原 `WorldMutationPlan` 映射至原样引入的核心 ChangeSet。场景 ID 与对象 ID 均进入 target；level-designer/project-owner 分别要求 scene:approve/project:approve。未知审批角色映射显式报错，不自动弱化审批要求。仅提案，不保存/审批/执行生产修改。
+
+界面已支持对象选择、对象批注与视角恢复、场景关系编辑和 ChangeSet 展示。GLB 解码、真实 DCC/Unity 写回、正式 Shell 注册、其他八类批注界面的完整交互仍不在本次入口范围；原算法继续保留。完整测试与新增后端回归均 `not run / pending approval`。
+
+统一应用现公开 `loadIntegratedWorkbench()`；空态、自有草稿、样例边界与验证限制见 [统一编辑器说明](docs/unified-workbench.md)。
+
+共享版本更新 `RebindAssetVersionRequest.object_ids` 可选指定实例子集；省略则保持原来的全部当前引用语义。指定身份必须属于待更新资产版本；更新只替换资产引用与显示来源，保留实例身份、变换和 KeyDoor。
+
+## 项目工具更新
+
+环境场景与项目资产采用平整布局，保留原生画布、拖入导入、分隔条及对象选择；新增统一 SVG 图标和有动作入口的空状态。

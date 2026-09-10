@@ -1,0 +1,27 @@
+{
+  "name": "@sceneops/ai-playtest-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "peerDependencies": {
+    "react": ">=18 <20"
+  },
+  "dependencies": {
+    "zod": "3.25.76",
+    "@sceneops/workbench-ui": "workspace:*",
+    "@sceneops/core-ui": "workspace:*",
+    "@sceneops/api-client": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "24.3.0",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "typescript": "5.9.2"
+  },
+  "scripts": {
+    "test": "node ../../../scripts/frontend-test.mjs src/tests",
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

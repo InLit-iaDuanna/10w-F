@@ -1,0 +1,168 @@
+/* Design-room planning journey material overrides. */
+
+/* PlanningJourney keeps document flow flat and raises only actionable blocks. */
+.workbench-root .planning-journey {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+}
+
+.workbench-root .planning-journey > header button,
+.workbench-root .planning-journey > header .journey-header-back {
+  border: 0;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root .journey-message.user {
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root .planning-journey button,
+.workbench-root .journey-start button {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root .planning-journey button:hover:not(:disabled),
+.workbench-root .journey-start button:hover:not(:disabled) {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.workbench-root .planning-journey button:active:not(:disabled),
+.workbench-root .planning-journey button[aria-pressed="true"] {
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .planning-journey .journey-composer {
+  border: 0;
+  border-radius: var(--neu-radius-lg);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+}
+
+.workbench-root .planning-journey .journey-composer:focus-within {
+  border-color: transparent;
+  box-shadow: var(--neu-focus-inset);
+}
+
+.workbench-root .planning-journey .journey-composer > textarea {
+  border-radius: 0;
+  color: var(--neu-ink);
+  background: transparent;
+  box-shadow: none;
+}
+
+.workbench-root .journey-conversation-modes button {
+  border-radius: var(--neu-radius-pill);
+  background: transparent;
+  box-shadow: none;
+}
+
+.workbench-root .journey-conversation-modes button:hover:not(:disabled) {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.workbench-root .journey-conversation-modes button[aria-pressed="true"] {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .planning-journey button.journey-submit,
+.workbench-root .planning-journey button.journey-confirm-model {
+  border: 0;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root :is(
+    .journey-question,
+    .journey-architecture,
+    .journey-plan-item,
+    .journey-change,
+    .journey-architecture-recommendation
+  ) {
+  border: 0;
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root :is(
+    .journey-tech-targets > div,
+    .journey-architecture-options article,
+    .journey-field-diff > div
+  ) {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .journey-question label {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+}
+
+.workbench-root .journey-question label:hover {
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.workbench-root .journey-question label.selected,
+.workbench-root .journey-plan-item[data-selected="true"] {
+  border-color: transparent;
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .journey-document textarea {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+}
+
+.workbench-root :is(
+    .journey-reasoning,
+    .journey-branch-context,
+    .journey-architecture-missing,
+    .journey-field-diff > div
+  ) {
+  border-left: 0;
+}
+
+.workbench-root :is(.journey-reasoning, .journey-branch-context, .journey-architecture-missing) {
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .journey-attachment,
+.workbench-root .journey-field-diff,
+.workbench-root .journey-modeling-entry {
+  border-color: rgb(88 101 122 / 14%);
+}
+
+@container unified-conversation (max-width: 520px) {
+  .workbench-root .unified-ai-conversation {
+    padding-inline: 10px;
+  }
+
+  .workbench-root .unified-ai-conversation article[data-role="user"] {
+    max-width: 92%;
+  }
+}

@@ -1,0 +1,294 @@
+/* Conversation-first surfaces and the planning journey. */
+
+.workbench-root .unified-ai-conversation {
+  --chat-canvas: var(--neu-base);
+  --chat-surface: var(--neu-base);
+  --chat-border: rgb(88 101 122 / 16%);
+  --chat-ink: var(--neu-ink);
+  --chat-muted: var(--neu-ink-secondary);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+}
+
+.workbench-root .unified-ai-project,
+.workbench-root .unified-ai-message-meta strong {
+  color: var(--neu-ink);
+}
+
+.workbench-root .unified-ai-transcript {
+  scrollbar-color: rgb(88 101 122 / 38%) transparent;
+}
+
+.workbench-root .unified-ai-conversation article {
+  color: var(--neu-ink);
+}
+
+.workbench-root .unified-ai-conversation article[data-role="user"] {
+  border: 0;
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root .unified-ai-conversation article[data-delivery="failed"] {
+  outline: 1px solid rgb(200 70 85 / 42%);
+  outline-offset: 3px;
+}
+
+.workbench-root .unified-ai-conversation article[data-delivery="cancelled"] {
+  outline: 1px solid rgb(88 101 122 / 26%);
+  outline-offset: 3px;
+}
+
+.workbench-root .unified-ai-message-meta,
+.workbench-root .unified-ai-context-chip,
+.workbench-root .unified-ai-composer-note,
+.workbench-root .unified-ai-stream-state,
+.workbench-root .unified-ai-outgoing-state {
+  color: var(--neu-ink-muted);
+}
+
+.workbench-root .unified-ai-conversation button {
+  border: 0;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root .unified-ai-conversation button:hover:not(:disabled) {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.workbench-root .unified-ai-conversation button:active:not(:disabled) {
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .unified-ai-conversation .unified-ai-composer {
+  border: 0;
+  border-radius: var(--neu-radius-lg);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+  transition: box-shadow var(--neu-transition);
+}
+
+.workbench-root .unified-ai-conversation .unified-ai-composer:focus-within {
+  border-color: transparent;
+  box-shadow: var(--neu-focus-inset);
+}
+
+.workbench-root .unified-ai-conversation textarea,
+.workbench-root .unified-ai-conversation textarea:focus {
+  border: 0;
+  border-radius: 0;
+  color: var(--neu-ink);
+  background: transparent;
+  box-shadow: none;
+}
+
+.workbench-root .unified-ai-conversation textarea::placeholder {
+  color: var(--neu-ink-muted);
+}
+
+.workbench-root .unified-ai-conversation .unified-ai-send,
+.workbench-root .unified-ai-conversation .unified-ai-cancel {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root .unified-ai-conversation .unified-ai-send:hover:not(:disabled),
+.workbench-root .unified-ai-conversation .unified-ai-cancel:hover {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover);
+}
+
+.workbench-root .unified-ai-conversation .unified-ai-send:active:not(:disabled),
+.workbench-root .unified-ai-conversation .unified-ai-cancel:active {
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .unified-ai-conversation .unified-ai-send:disabled {
+  color: var(--neu-ink-muted);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .unified-ai-model select,
+.workbench-root .unified-ai-document select,
+.workbench-root .unified-ai-model.is-compact select {
+  border: 0;
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .unified-ai-model.is-compact select option {
+  color: var(--neu-ink);
+  background: var(--neu-base-soft);
+}
+
+.workbench-root .unified-ai-thread-menu > summary,
+.workbench-root .unified-ai-context-menu > summary {
+  color: var(--neu-ink-muted);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+  transition:
+    box-shadow var(--neu-transition),
+    color var(--neu-transition);
+}
+
+.workbench-root .unified-ai-thread-menu[open] > summary,
+.workbench-root .unified-ai-context-menu[open] > summary,
+.workbench-root .unified-ai-context-menu > summary:hover,
+.workbench-root .unified-ai-thread-menu > summary:hover {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-pressed);
+}
+
+.workbench-root .unified-ai-thread-menu > div,
+.workbench-root .unified-ai-context-popover {
+  border: 0;
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-lg);
+}
+
+.workbench-root .unified-ai-context-popover p,
+.workbench-root .unified-ai-context-popover .unified-ai-document label {
+  color: var(--neu-ink-secondary);
+}
+
+.workbench-root .unified-ai-context-popover .unified-ai-document select {
+  border: 0;
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-sm);
+}
+
+.workbench-root .unified-ai-advice article {
+  border-color: rgb(88 101 122 / 14%);
+}
+
+.workbench-root .unified-ai-advice textarea {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+}
+
+.workbench-root .unified-ai-advice button {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.unified-ai-provider-dialog {
+  border: 0;
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-lg);
+}
+
+.unified-ai-provider-dialog::backdrop {
+  background: rgb(63 74 93 / 26%);
+  backdrop-filter: none;
+}
+
+.unified-ai-provider-dialog header p,
+.unified-ai-provider-dialog p,
+.unified-ai-provider-dialog small {
+  color: var(--neu-ink-secondary);
+}
+
+.unified-ai-provider-dialog :is(input, textarea, select) {
+  border: 0;
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+}
+
+.unified-ai-provider-dialog fieldset,
+.unified-ai-provider-note {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+/* Legacy conversation editor remains visually compatible with the unified view. */
+.workbench-root .conversation-home {
+  --conversation-canvas: var(--neu-base);
+  --conversation-surface: var(--neu-base);
+  --conversation-surface-raised: var(--neu-base);
+  --conversation-border: rgb(88 101 122 / 15%);
+  --conversation-text: var(--neu-ink);
+  --conversation-muted: var(--neu-ink-secondary);
+  --conversation-focus: var(--neu-accent-ink);
+  color: var(--neu-ink);
+  background: var(--neu-base);
+  font-family: inherit;
+}
+
+.workbench-root .conversation-home button {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  color: var(--neu-ink-secondary);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-xs);
+}
+
+.workbench-root .conversation-home button:hover:not(:disabled) {
+  color: var(--neu-accent-ink);
+  background: var(--neu-base);
+  box-shadow: var(--neu-hover-xs);
+}
+
+.workbench-root .conversation-empty__brand {
+  color: var(--neu-accent-ink);
+}
+
+.workbench-root .conversation-message--user,
+.workbench-root .conversation-card {
+  border: 0;
+  border-radius: var(--neu-radius-sm);
+  background: var(--neu-base);
+  box-shadow: var(--neu-raised-sm);
+}
+
+.workbench-root .conversation-card--error {
+  outline: 1px solid rgb(200 70 85 / 44%);
+}
+
+.workbench-root .conversation-card--approval {
+  outline: 1px solid rgb(155 106 22 / 48%);
+}
+
+.workbench-root .conversation-layout-preview,
+.workbench-root .conversation-context__chip {
+  border: 0;
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset-xs);
+}
+
+.workbench-root .conversation-layout-preview {
+  border-left: 0;
+  border-radius: var(--neu-radius-sm);
+}
+
+.workbench-root .conversation-composer {
+  border: 0;
+  border-radius: var(--neu-radius);
+  background: var(--neu-base);
+  box-shadow: var(--neu-inset);
+}
+
+.workbench-root .conversation-composer textarea {
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
