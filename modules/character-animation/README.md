@@ -62,7 +62,7 @@ Character and Animation 为 SceneOps Forge 提供可检查的角色、Rig、Skin
 
 ## 设置与生成
 
-后端需要 Python 3.9+。从模块目录生成合同：
+后端需要 Python 3.10+。从模块目录生成合同：
 
 ```bash
 PYTHONPYCACHEPREFIX=/tmp/sceneops-character-pycache \
